@@ -1,4 +1,18 @@
 services:
+  redis:
+    image: redis:latest
+    restart: always
+    command: ["redis-server", "--bind", "redis", "--port", "6379", "--requirepass", "${REDIS_PASSWORD}"]
+    environment:
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 20s
+      retries: 5
+      start_period: 5s
   mysqldb:
     image: mysql:5.7
     restart: unless-stopped
