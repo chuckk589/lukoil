@@ -1,0 +1,2 @@
+ssh root@df01f2645aa7.vps.myjino.ru -p 49405 'sudo docker cp kinder-app-1:/app/dist/modules/bot/locales ./; exit'
+scp -P 49405 -r root@df01f2645aa7.vps.myjino.ru:/root/locales "c:\programs\projects\lukoil"
