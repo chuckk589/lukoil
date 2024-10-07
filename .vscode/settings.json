@@ -1,7 +1,6 @@
 {
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit",
-        "source.removeUnusedImports": "explicit"
     },
     "editor.bracketPairColorization.enabled": false
 }

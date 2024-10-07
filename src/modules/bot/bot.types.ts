@@ -1,22 +1,20 @@
 import { I18nContext, TemplateData } from '@grammyjs/i18n';
 import { MenuFlavor, MenuControlPanel } from '@grammyjs/menu';
-import { Context, SessionFlavor, Api } from 'grammy';
+import { Context, SessionFlavor, Api, Composer } from 'grammy';
 import { Update, UserFromGetMe } from 'grammy/types';
 import { RetrieveTicketDto } from '../ticket/dto/retrieve-ticket.dto';
-import * as ru from './helpers/localeDonors/ru';
+import { ru } from './helpers/localeDonors/ru';
 
 type I18nContextMapped = Omit<I18nContext, 't'> & { t(resourceKey: LOCALES, templateData?: Readonly<TemplateData>): string };
 type I18nContextMappedFlavor = { readonly i18n: I18nContextMapped };
 export enum BotStep {
   default = 'default',
-  age = 'age',
+  rules = 'rules',
   phone = 'phone',
-  name = 'name',
+  age = 'age',
   resident = 'resident',
+  name = 'name',
   city = 'city',
-  promo = 'promo',
-  email = 'email',
-  forward = 'forward',
   // check = 'check',
   // help = 'help',
   tickets = 'tickets',
@@ -24,13 +22,18 @@ export enum BotStep {
   ticketsCreate = 'ticketsCreate',
   ticketsReply = 'ticketsReply',
 }
-
+export class BaseComposer {
+  protected _composer: Composer<any>;
+  getMiddleware(): Composer<any> {
+    return this._composer;
+  }
+}
 export class BotContext extends Context implements SessionFlavor<Session>, I18nContextMappedFlavor, MenuFlavor {
   constructor(update: Update, api: Api, me: UserFromGetMe) {
     super(update, api, me);
   }
   menu: MenuControlPanel;
-  i18n: I18nContext;
+  i18n: I18nContextMapped;
   match: string;
 
   get session(): Session {
@@ -70,5 +73,6 @@ export interface Session {
     city_id?: number;
     promo_id?: number;
   };
+  setStep(step: BotStep): void;
 }
 export type LOCALES = keyof typeof ru;

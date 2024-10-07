@@ -9,6 +9,9 @@ const initial = (): Session => ({
   // checkCount: 0,
   winners: [],
   userData: { tickets: { data: [], currentIndex: 0 } },
+  setStep(step: BotStep) {
+    this.step = step;
+  },
 });
 
 function getSessionKey(ctx: BotContext): string | undefined {
