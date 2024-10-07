@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { CheckModule } from './modules/check/check.module';
 import { LotteryModule } from './modules/lottery/lottery.module';
 import { UserModule } from './modules/user/user.module';
@@ -38,7 +36,7 @@ import { BotModule } from './modules/bot/bot.module';
     MikroOrmModule.forRoot(MikroORMOptions),
     BotModule.forRoot({ token: process.env.BOT_TOKEN }),
     BullModule.forRoot({ connection: RedisConnectionOptions }),
-    ServeStaticModule.forRoot({ rootPath: join(__dirname, './', 'public/') }),
+    // ServeStaticModule.forRoot({ rootPath: join(__dirname, './', 'public/') }),
     UserModule,
     LotteryModule,
     CheckModule,
