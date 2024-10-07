@@ -4,12 +4,12 @@ WORKDIR /app
 COPY package.json tsconfig.json yarn.lock  ./
 RUN yarn --frozen-lockfile
 
-FROM base as vue
-COPY . .
-WORKDIR /app/vue
-RUN yarn
+# FROM base as vue
+# COPY . .
+# WORKDIR /app/vue
+# RUN yarn
 
-FROM vue as builder
+FROM base as builder
 WORKDIR /app
 COPY . .
 RUN yarn run build
