@@ -2,6 +2,7 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "assets": ["/modules/bot/locales/**/*", "/public/assets/**/*"]
+    "assets": ["/modules/bot/locales/**/*", "/public/assets/**/*"],
+    "plugins": ["@nestjs/swagger"]
   }
 }
