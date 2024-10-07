@@ -2,7 +2,7 @@ services:
   mysqldb:
     image: mysql:5.7
     restart: unless-stopped
-    env_file: ./.env
+    env_file: ./.lukoil.env
     command: [ "mysqld", "--default-authentication-plugin=mysql_native_password" ]
     environment:
       - MYSQL_ROOT_HOST=%
@@ -20,7 +20,7 @@ services:
       target: builder
     command: sh -c -f "yarn mikro-orm schema:update --run&&yarn mikro-orm seeder:run --class=ConfigSeeder;yarn run start:prod"
     restart: unless-stopped
-    env_file: ./.env
+    env_file: ./.lukoil.env
     environment:
       - NODE_ENV=${NODE_ENV}
     volumes:
