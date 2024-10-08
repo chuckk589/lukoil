@@ -1,13 +1,16 @@
-import { Entity, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Entity, Enum, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+export enum PrizeType {
+  PRIZE_WEEKLY = 'prize_weekly',
+  PRIZE_MAIN = 'prize_main',
+}
 
 @Entity()
 export class Prize {
   @PrimaryKey()
   id!: number;
 
-  @Unique()
-  @Property({ length: 255, nullable: true })
-  name: string;
+  @Enum({ items: () => PrizeType })
+  name: PrizeType;
 
   @Property()
   description: string;

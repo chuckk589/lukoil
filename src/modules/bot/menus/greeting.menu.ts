@@ -1,92 +1,45 @@
 import { Menu } from '@grammyjs/menu';
 import { Keyboard } from 'grammy';
 import { Locale } from 'src/modules/mikroorm/entities/User';
-import { BaseComposer, BotContext, BotStep } from '../bot.types';
+import { BaseComposer, BaseMenu, BotContext, BotStep } from '../bot.types';
 import { ComposerController, MenuController, Use } from '../common/decorators';
 import { label } from '../common/helpers';
 import { GlobalService } from '../services/global.service';
 import cache from '../common/cache';
+import { BotMenus } from '../bot.constants';
 
 @MenuController
-export class AccountComposer extends BaseComposer {
-  constructor(private readonly globalService: GlobalService) {
+export class GreetingMenu extends BaseMenu {
+  constructor() {
     super();
   }
-  @Use()
-  menu = new Menu<BotContext>('reg-menu').dynamic((ctx, range) => {
-    const locale = ctx.i18n.locale() as Locale;
-    switch (ctx.session.step) {
-      case BotStep.default: {
-        Object.values(Locale).map((lang) =>
-          range.text(label({ text: lang as any }), async (ctx) => {
-            ctx.i18n.locale(lang);
-            ctx.session.step = BotStep.rules;
-            ctx.session.userData.locale = lang;
-            ctx.menu.close();
-            const msg = await ctx.replyWithDocument(cache.resolveAsset(`oferta_${lang}`), { reply_markup: this.menu });
-            cache.cacheAsset(`oferta_${lang}`, msg);
-          }),
-        );
-        break;
-      }
-      case BotStep.rules: {
-        range.text(label({ text: LOCALES.accept }), async (ctx) => {
-          ctx.menu.close();
-          ctx.session.step = BotStep.phone;
 
-          const msg = await ctx.replyWithPhoto(cache.resolveAsset('phone'), { reply_markup: new Keyboard().requestContact(ctx.i18n.t(LOCALES.contact)).oneTime() });
-          cache.cacheAsset('phone', msg);
-        });
-        range.text(label({ text: LOCALES.reject }), async (ctx) => {
-          ctx.menu.close();
-          ctx.session.step = BotStep.default;
-          await ctx.reply(ctx.i18n.t(LOCALES.restricted_rules));
-        });
-        break;
-      }
-      case BotStep.age: {
-        range.text(label({ text: LOCALES.yes }), async (ctx) => {
-          ctx.menu.close();
-          ctx.session.step = BotStep.resident;
-          await ctx.reply(ctx.i18n.t(LOCALES.ask_residence), { reply_markup: this.menu });
-        });
-        range.text(label({ text: LOCALES.no }), async (ctx) => {
-          ctx.menu.close();
-          ctx.session.step = BotStep.default;
-          await ctx.reply(ctx.i18n.t(LOCALES.restricted_age));
-        });
-        break;
-      }
-      case BotStep.resident: {
-        range.text(label({ text: LOCALES.yes }), async (ctx) => {
-          ctx.menu.close();
-          ctx.session.step = BotStep.name;
-          await ctx.reply(ctx.i18n.t(LOCALES.ask_name), { reply_markup: { remove_keyboard: true } });
-        });
-        range.text(label({ text: LOCALES.no }), async (ctx) => {
-          ctx.menu.close();
-          ctx.session.step = BotStep.default;
-          await ctx.reply(ctx.i18n.t(LOCALES.restricted_residence), { reply_markup: { remove_keyboard: true } });
-        });
-        break;
-      }
-      case BotStep.city: {
-        this.AppConfigService.cities.map((city, index) => {
-          range.text(label({ text: city.translation[locale] as any }), async (ctx) => {
-            ctx.session.step = BotStep.default;
-            ctx.session.isRegistered = true;
-            ctx.session.userData.city_id = city.id;
-            ctx.menu.close();
-            await this.globalService.finishRegistration(ctx);
-            // await ctx.reply(ctx.i18n.t(LOCALES.registered), { reply_markup: mainKeyboard(ctx) });
-            const msg = await ctx.replyWithPhoto(cache.resolveAsset('about'), { reply_markup: this.mMenu });
-            cache.cacheAsset('about', msg);
-          }),
-            index % 3 === 0 && range.row();
-        });
-        break;
-      }
+  @Use()
+  menu = new Menu<BotContext>(BotMenus.GREETING).dynamic((ctx, range) => {
+    if (ctx.session.step == BotStep.default) {
+      range.text(label('register'), this.registerHandler);
+      range.text(label('switch_language'), this.langHandler);
+    } else if (ctx.session.step == BotStep.language) {
+      Object.values(Locale).map((lang) => range.text(label(lang), (ctx) => this.switchLangHandlerLocally(ctx, lang)));
     }
     return range;
   });
+
+  private registerHandler = async (ctx: BotContext) => {
+    ctx.menu.close();
+    const msg = await ctx.replyWithPhoto(cache.resolveAsset('phone'), { reply_markup: new Keyboard().requestContact(ctx.i18n.t('contact')).oneTime() });
+    cache.cacheAsset('phone', msg);
+  };
+  private langHandler = async (ctx: BotContext) => {
+    ctx.session.setStep(BotStep.language);
+    await ctx.editMessageCaption({ caption: ctx.i18n.t('switch_lang_content') });
+  };
+  private switchLangHandlerLocally = async (ctx: BotContext, lang: Locale) => {
+    ctx.session.setStep(BotStep.default);
+
+    ctx.i18n.locale(lang);
+    ctx.session.userData.locale = lang;
+
+    await ctx.editMessageCaption({ caption: ctx.i18n.t('start') });
+  };
 }

@@ -4,7 +4,7 @@ import { Config } from '../entities/Config';
 import { City } from '../entities/City';
 import { CheckState, CheckStatus } from '../entities/CheckStatus';
 import { LotteryState, LotteryStatus } from '../entities/LotteryStatus';
-import { Prize } from '../entities/Prize';
+import { Prize, PrizeType } from '../entities/Prize';
 
 export class ConfigSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -41,12 +41,12 @@ export class ConfigSeeder extends Seeder {
     }
 
     em.create(Prize, {
-      name: 'PRIZE_WEEKLY',
+      name: PrizeType.PRIZE_WEEKLY,
       description: 'Еженедельный приз',
     });
 
     em.create(Prize, {
-      name: 'PRIZE_MAIN',
+      name: PrizeType.PRIZE_MAIN,
       description: 'Главный приз',
     });
   }

@@ -2,6 +2,7 @@ import { Composer, FilterQuery } from 'grammy';
 import { LISTENERS_METADATA } from 'src/constants';
 import { match } from 'src/modules/bot/common/helpers';
 import { BotContext } from '../bot.types';
+import { Menu } from '@grammyjs/menu';
 
 class BotListenerMetadata {
   constructor(method: ComposerMethod, payload: any, key: string, parent?: string) {
@@ -72,8 +73,7 @@ export function MenuController<T extends { new (...args: any[]): { menu: Menu } 
       const composer = new Composer<BotContext>();
       let handlers: BotListenerMetadata[] = Reflect.getMetadata(LISTENERS_METADATA, this);
       //fill children
-      console.log(handlers);
-      handlers = handlers.filter((handler) => (handler.parent ? !handlers.find((h) => h.key === handler.parent)?.children.push(handler) : true));
+      handlers = handlers.filter((handler) => handler.key == 'menu' && (handler.parent ? !handlers.find((h) => h.key === handler.parent)?.children.push(handler) : true));
       concatChildren.call(this, handlers, composer);
       return composer;
     }

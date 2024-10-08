@@ -7,6 +7,12 @@ import checkTime from './middleware/checkTime';
 import i18n from './middleware/i18n';
 import { session } from './middleware/session';
 import { GlobalService } from './services/global.service';
+import { GreetingMenu } from './menus/greeting.menu';
+import { MainMenu } from './menus/main.menu';
+import { RegisterMenu } from './menus/register.menu';
+import { WinnerMenu } from './menus/winner.menu';
+import { TicketMenu } from './menus/ticket.menu';
+import { TicketService } from '../ticket/ticket.service';
 
 export interface GrammyBotOptions {
   token: string;
@@ -19,12 +25,11 @@ export class BotModule {
     const BotProvider: Provider = {
       provide: BOT_NAME,
       useFactory: async (...composers: BaseComposer[]) => await this.createBotFactory(options, ...composers),
-      inject: [GlobalComposer],
+      inject: [TicketMenu, WinnerMenu, GreetingMenu, MainMenu, RegisterMenu, GlobalComposer],
     };
-
     return {
       module: BotModule,
-      providers: [BotProvider, GlobalComposer, GlobalService],
+      providers: [TicketService, BotProvider, TicketMenu, WinnerMenu, GreetingMenu, MainMenu, RegisterMenu, GlobalComposer, GlobalService],
       exports: [BotProvider],
     };
   }
@@ -34,7 +39,7 @@ export class BotModule {
     bot.use(session);
     bot.use(checkTime);
     bot.use(i18n.middleware());
-
+    //TODO: filter and apply menus first
     composers?.map((middleware) => bot.use(middleware.getMiddleware()));
 
     bot.start();

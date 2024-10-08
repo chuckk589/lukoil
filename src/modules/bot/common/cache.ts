@@ -8,8 +8,8 @@ class Cache {
   private _cache: Map<string, any>;
   //TODO: remove hardcoded language
   private _assets: { [key: string]: string } = {
-    // oferta_ru: 'dist/public/assets/oferta_ru.pdf',
-    // oferta_kz: 'dist/public/assets/oferta_kz.pdf',
+    oferta_ru: 'dist/public/assets/oferta_ru.pdf',
+    oferta_kz: 'dist/public/assets/oferta_kz.pdf',
     // start: 'dist/public/assets/start.png',
     // about_ru: 'dist/public/assets/about_ru.png',
     // about_kz: 'dist/public/assets/about_kz.png',
@@ -19,6 +19,9 @@ class Cache {
     // parBarcode_kz: 'dist/public/assets/parBarcode_kz.png',
     // contacts_ru: 'dist/public/assets/contacts_ru.png',
     // contacts_kz: 'dist/public/assets/contacts_kz.png',
+    start: 'dist/public/assets/start.png',
+    phone: 'dist/public/assets/phone.png',
+    about: 'dist/public/assets/about.png',
   };
   public resolveAsset(name: string): string | InputFile {
     if (this._cache.has(name)) return this._cache.get(name);

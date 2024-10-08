@@ -5,6 +5,7 @@ import { User } from './User';
 import { Winner } from './Winner';
 import { BaseRepo } from '../repo/base.repo';
 import { Scope } from '../repo/scope';
+import { LotteryState } from './LotteryStatus';
 
 @Entity({ repository: () => CheckRepo })
 export class Check extends CustomBaseEntity {
@@ -48,6 +49,17 @@ export class CheckRepo extends BaseRepo<Check> {
     const user = await this._em.findOneOrFail(User, { id: userId });
     const check = await this.createCheck({ user, value });
     return check;
+  }
+  async findWonChecksForUserChatId(chatId: string) {
+    const checks = await this.find(
+      {
+        user: { chatId },
+        status: { name: CheckState.APPROVED },
+        winners: { confirmed: true, lottery: { status: { name: LotteryState.ENDED } } },
+      },
+      { populate: ['winners.lottery.prize'] },
+    );
+    return checks;
   }
   private async createCheck(payload: FilterQuery<Check>): Promise<Check> {
     try {

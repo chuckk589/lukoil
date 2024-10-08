@@ -1,5 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
 import { StatusService } from './status.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UpdateLocaleDto } from './dto/update-locale.dto';
 
 @Controller({
   path: 'status',
@@ -12,13 +14,13 @@ export class StatusController {
   findAll() {
     return this.statusService.findAll();
   }
-  // @Get('/locales')
-  // findLocales() {
-  //   return this.statusService.findLocales();
-  // }
-  // @UseGuards(JwtAuthGuard)
-  // @Put('/locales')
-  // updateLocales(@Body() updateLocaleDto: UpdateLocaleDto) {
-  //   return this.statusService.updateLocales(updateLocaleDto);
-  // }
+  @Get('/locales')
+  findLocales() {
+    return this.statusService.findLocales();
+  }
+  @UseGuards(JwtAuthGuard)
+  @Put('/locales')
+  updateLocales(@Body() updateLocaleDto: UpdateLocaleDto) {
+    return this.statusService.updateLocales(updateLocaleDto);
+  }
 }

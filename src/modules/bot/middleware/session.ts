@@ -5,10 +5,8 @@ const initial = (): Session => ({
   menuId: undefined,
   bulkId: undefined,
   step: BotStep.default,
-  isRegistered: undefined,
-  // checkCount: 0,
   winners: [],
-  userData: { tickets: { data: [], currentIndex: 0 } },
+  userData: { tickets: { data: [], currentIndex: 0 }, locale: 'ru' },
   setStep(step: BotStep) {
     this.step = step;
   },

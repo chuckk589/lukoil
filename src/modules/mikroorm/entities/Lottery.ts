@@ -1,10 +1,10 @@
 import { BeforeCreate, Collection, Entity, EntityRepositoryType, EventArgs, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { CustomBaseEntity } from './CustomBaseEntity';
 import { LotteryState, LotteryStatus } from './LotteryStatus';
-import { Prize } from './Prize';
 import { Winner } from './Winner';
 import { BaseRepo } from '../repo/base.repo';
 import { CheckState } from './CheckStatus';
+import { Prize } from './Prize';
 
 @Entity({ repository: () => LotteryRepo })
 export class Lottery extends CustomBaseEntity {
@@ -48,7 +48,7 @@ export class LotteryRepo extends BaseRepo<Lottery> {
         status: { name: LotteryState.ENDED },
       },
       {
-        populate: ['winners.check', 'winners.check.user', 'prize'],
+        populate: ['winners.check.user', 'winners.check.user', 'prize'],
         refresh: true,
         populateWhere: {
           winners: {

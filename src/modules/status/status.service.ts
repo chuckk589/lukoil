@@ -8,6 +8,7 @@ import { City } from '../mikroorm/entities/City';
 import { LotteryStatus } from '../mikroorm/entities/LotteryStatus';
 import { Prize } from '../mikroorm/entities/Prize';
 import { RetrieveStatusDto } from './dto/retrieve-status.dto';
+import { Locale, UserRole } from '../mikroorm/entities/User';
 
 @Injectable()
 export class StatusService {
@@ -31,8 +32,8 @@ export class StatusService {
     return {
       check_statuses: check_s.map((check_s) => new RetrieveStatusDto(check_s)),
       lottery_statuses: lottery_s.map((lottery_s) => new RetrieveStatusDto(lottery_s)),
-      // locales: Object.values(Locale).map((locale) => new RetrieveStatusDto({ value: locale, label: locale == 'ru' ? 'Русский' : 'Казахский' })),
-      // roles: Object.values(UserRole).map((role) => new RetrieveStatusDto({ value: role, label: role == 'user' ? 'Пользователь' : 'Администратор' })),
+      locales: Object.values(Locale).map((locale) => new RetrieveStatusDto({ name: locale, description: locale == 'ru' ? 'Русский' : 'Казахский' })),
+      roles: Object.values(UserRole).map((role) => new RetrieveStatusDto({ name: role, description: role == 'user' ? 'Пользователь' : 'Администратор' })),
       cities: cities.map((city) => new RetrieveStatusDto(city)),
       prizes: prizes.map((prize) => new RetrieveStatusDto(prize)),
     };

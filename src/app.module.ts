@@ -14,6 +14,8 @@ import { BullModule } from '@nestjs/bullmq';
 import { RedisConnectionOptions } from './configs/redis.config';
 import { ConfigModule } from '@nestjs/config';
 import { BotModule } from './modules/bot/bot.module';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -36,7 +38,7 @@ import { BotModule } from './modules/bot/bot.module';
     MikroOrmModule.forRoot(MikroORMOptions),
     BotModule.forRoot({ token: process.env.BOT_TOKEN }),
     BullModule.forRoot({ connection: RedisConnectionOptions }),
-    // ServeStaticModule.forRoot({ rootPath: join(__dirname, './', 'public/') }),
+    ServeStaticModule.forRoot({ rootPath: join(__dirname, './', 'public/') }),
     UserModule,
     LotteryModule,
     CheckModule,

@@ -1,9 +1,10 @@
 import { Collection, Entity, EntityRepositoryType, Enum, FilterQuery, ManyToOne, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { Check } from './Check';
-import { City } from './City';
 import { BaseRepo } from '../repo/base.repo';
 import { Scope } from '../repo/scope';
 import { CustomBaseEntity } from './CustomBaseEntity';
+import { City } from './City';
+import { Ticket } from './Ticket';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -55,6 +56,9 @@ export class User extends CustomBaseEntity {
   @OneToMany(() => Check, (check) => check.user, { orphanRemoval: true })
   checks = new Collection<Check>(this);
 
+  @OneToMany(() => Ticket, (ticket) => ticket.user, { orphanRemoval: true })
+  tickets = new Collection<Ticket>(this);
+
   @Property({ nullable: true })
   email: string;
 
@@ -82,6 +86,12 @@ export class UserRepo extends BaseRepo<User> {
     scope.byPhone(phone);
     return this.findOne(scope.query);
   }
+  findOneByChatId(chatId: string): Promise<User> {
+    const scope = new UserScope();
+    scope.byChatId(chatId);
+    return this.findOne(scope.query);
+  }
+
   async createByPhoneIfNotExists(phone: string): Promise<User> {
     const scope = new UserScope();
     scope.byPhone(phone);
