@@ -1,4 +1,5 @@
-import { EntityRepository, FilterQuery } from '@mikro-orm/core';
+import { EntityRepository } from '@mikro-orm/mysql';
+import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { CustomBaseEntity } from '../entities/CustomBaseEntity';
 

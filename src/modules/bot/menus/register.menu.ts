@@ -1,8 +1,6 @@
 import { Menu } from '@grammyjs/menu';
-import { Keyboard } from 'grammy';
-import { Locale } from 'src/modules/mikroorm/entities/User';
-import { BaseComposer, BaseMenu, BotContext, BotStep, LOCALES } from '../bot.types';
-import { ComposerController, MenuController, Use } from '../common/decorators';
+import { BaseMenu, BotContext, BotStep, LOCALES } from '../bot.types';
+import { MenuController, Use } from '../common/decorators';
 import { label } from '../common/helpers';
 import { GlobalService } from '../services/global.service';
 import cache from '../common/cache';
@@ -20,7 +18,8 @@ export class RegisterMenu extends BaseMenu {
     ctx.menu.close();
     ctx.session.step = BotStep.city;
 
-    await ctx.reply(ctx.i18n.t('ask_city'), { reply_markup: this.menu });
+    const msg = await ctx.replyWithPhoto(cache.resolveAsset('city_' + ctx.i18n.locale()), { caption: ctx.i18n.t('ask_city'), reply_markup: this.menu });
+    cache.cacheAsset('city_' + ctx.i18n.locale(), msg);
   };
   private rejectHandler = async (ctx: BotContext) => {
     ctx.menu.close();
@@ -34,8 +33,8 @@ export class RegisterMenu extends BaseMenu {
 
     await this.globalService.finishRegistration(ctx);
 
-    const msg = await ctx.replyWithPhoto(cache.resolveAsset('about'), { reply_markup: this.mainMenu.getMenu() });
-    cache.cacheAsset('about', msg);
+    const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { reply_markup: this.mainMenu.getMenu() });
+    cache.cacheAsset('start', msg);
   };
 
   @Use()

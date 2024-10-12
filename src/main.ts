@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CheckModule } from './modules/check/check.module';
 import { StatusModule } from './modules/status/status.module';
 import { WinnerModule } from './modules/winner/winner.module';
+import { TicketModule } from './modules/ticket/ticket.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,7 +16,7 @@ async function bootstrap() {
 
   //swagger
   const config = new DocumentBuilder().setVersion('1.0').addBearerAuth().build();
-  const document = SwaggerModule.createDocument(app, config, { include: [AuthModule, CheckModule, WinnerModule, StatusModule] });
+  const document = SwaggerModule.createDocument(app, config, { include: [AuthModule, CheckModule, WinnerModule, StatusModule, TicketModule] });
 
   SwaggerModule.setup('api', app, document);
 

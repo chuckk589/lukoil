@@ -9,6 +9,7 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { User } from '../mikroorm/entities/User';
 import { TicketMessage } from '../mikroorm/entities/TicketMessage';
 import { BotContext } from '../bot/bot.types';
+import { JWTTokenPayload } from '../auth/auth.types';
 
 @Injectable()
 export class TicketService {
@@ -31,7 +32,7 @@ export class TicketService {
     updateTicketDto.status ? (ticket.status = updateTicketDto.status as TicketStatus) : null;
     updateTicketDto.response ? ticket.messages.add(this.em.create(TicketMessage, { message: updateTicketDto.response, user: author })) : null;
     await this.em.persistAndFlush(ticket);
-    if (updateTicketDto.status == TicketStatus.CLOSED) {
+    if (updateTicketDto.status != TicketStatus.PENDING && ticket.user.chatId) {
       const message = `Ваша заявка №${ticket.id} была обработана.\n\n${updateTicketDto.response}`;
       this.bot.api.sendMessage(ticket.user.chatId, message || '');
     }
@@ -40,7 +41,7 @@ export class TicketService {
   async create(createTicketDto: CreateTicketDto) {
     const user = await this.em.findOneOrFail(User, {
       ...(createTicketDto.chatId ? { chatId: createTicketDto.chatId } : {}),
-      ...(createTicketDto.userId ? { username: createTicketDto.userId } : {}),
+      ...(createTicketDto.userId ? { id: createTicketDto.userId } : {}),
     });
 
     const ticket = this.em.create(Ticket, {
@@ -55,5 +56,13 @@ export class TicketService {
   async findOne(id: number): Promise<RetrieveTicketDto> {
     const ticket = await this.em.findOneOrFail(Ticket, id, { populate: ['user', 'messages.user'] });
     return new RetrieveTicketDto(ticket);
+  }
+
+  async findAllMe(user: JWTTokenPayload) {
+    const uRepo = this.em.getRepository(User);
+    const tRepo = this.em.getRepository(Ticket);
+    const _user = await uRepo.findById(user.id.toString());
+    const tickets = await tRepo.findTicketsByChatId(_user.chatId);
+    return tickets.map((ticket) => new RetrieveTicketDto(ticket));
   }
 }

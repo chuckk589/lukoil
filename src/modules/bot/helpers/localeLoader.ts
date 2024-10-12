@@ -10,3 +10,4 @@ function generateLocales() {
   }
 }
 generateLocales();
+//$ ts-node src/modules/bot/helpers/localeLoader.ts

@@ -1,86 +1,4 @@
 <template>
-  <!-- <v-dialog v-model="show" transition="dialog-bottom-transition">
-    <v-overlay v-model="imageOverlay" width="100%" height="100vh">
-      <v-img :src="imagePath" @click="setImage()"></v-img>
-    </v-overlay>
-    <v-container class="">
-      <v-card
-        class="ma-auto d-flex flex-column justify-space-around"
-        min-width="700px"
-        min-height="700px"
-      >
-        <v-card-title>{{ payload.header }}</v-card-title>
-        <v-card-text>
-          <template v-for="(field, index) in payload.fields">
-            <v-textarea
-              v-if="field.type == 'textarea'"
-              :key="'t' + index"
-              :label="field.label || field.key"
-              density="comfortable"
-              :disabled="isFieldActive(field)"
-              :hint="field.hint"
-              v-model="field.value"
-            />
-            <v-select
-              v-else-if="field.type == 'select'"
-              :key="'s' + index"
-              :label="field.label || field.key"
-              density="comfortable"
-              v-model="field.value"
-              :hint="field.hint"
-              :disabled="isFieldActive(field)"
-              :items="field.options"
-            />
-            <v-text-field
-              v-else-if="field.type == 'date'"
-              type="date"
-              density="comfortable"
-              :key="'d' + index"
-              :label="field.label || field.key"
-              :hint="field.hint"
-              :disabled="isFieldActive(field)"
-              v-model="field.value"
-            />
-            <v-img
-              v-else-if="field.type == 'img'"
-              class="bg-white mb-5"
-              :key="'i' + index"
-              @click="setImage(field.value)"
-              max-width="500px"
-              aspect-ratio="1"
-              :src="field.value"
-            ></v-img>
-            <v-text-field
-              v-else
-              density="comfortable"
-              :key="'r' + index"
-              :label="field.label || field.key"
-              :disabled="isFieldActive(field)"
-              :hint="field.hint"
-              v-model="field.value"
-            />
-          </template>
-        </v-card-text>
-        <v-card-actions class="mt-auto">
-          <v-btn
-            v-if="!payload.noSave"
-            color="primary"
-            size="small"
-            @click="save"
-            variant="outlined"
-            >Сохранить</v-btn
-          >
-          <v-btn
-            variant="outlined"
-            color="primary"
-            @click="show = false"
-            size="small"
-            >Отмена</v-btn
-          >
-        </v-card-actions>
-      </v-card>
-    </v-container>
-  </v-dialog> -->
   <v-navigation-drawer
     :model-value="show"
     @update:modelValue="close"
@@ -97,6 +15,14 @@
     >
       <v-card-title>{{ payload.header }}</v-card-title>
       <v-card-text>
+        <v-card
+          v-for="(field, index) in payload.addFields"
+          :key="'a' + index"
+          :subtitle="field.label || field.key"
+          :text="field.value"
+          class="mb-5"
+          style="white-space: pre"
+        ></v-card>
         <template v-for="(field, index) in payload.fields">
           <v-textarea
             v-if="field.type == 'textarea'"
@@ -109,6 +35,8 @@
           />
           <v-select
             v-else-if="field.type == 'select'"
+            item-title="description"
+            :item-value="field.valueField || 'name'"
             :key="'s' + index"
             :label="field.label || field.key"
             density="comfortable"

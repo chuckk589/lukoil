@@ -1,6 +1,9 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { LotteryService } from './lottery.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreateLotteryDto } from './dto/create-lottery.dto';
+import { RetrieveLotteryDto } from './dto/retrieve-lottery.dto';
+import { UpdateLotteryDto } from './dto/update-lottery.dto';
 
 @Controller({
   path: 'lottery',
@@ -10,23 +13,23 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 export class LotteryController {
   constructor(private readonly lotteryService: LotteryService) {}
 
-  // @Post()
-  // async create(@Body() createLotteryDto: CreateLotteryDto): Promise<RetrieveLotteryDto> {
-  //   return await this.lotteryService.create(createLotteryDto);
-  // }
+  @Post()
+  async create(@Body() createLotteryDto: CreateLotteryDto): Promise<RetrieveLotteryDto> {
+    return await this.lotteryService.create(createLotteryDto);
+  }
   // @Post(':id/winner')
   // async addWinner(@Body() createWinnerDto: CreateWinnerDto, @Param('id') id: string) {
   //   return await this.lotteryService.addWinner(createWinnerDto, +id);
   // }
-  // @Get()
-  // findAll() {
-  //   return this.lotteryService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.lotteryService.findAll();
+  }
 
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateLotteryDto: UpdateLotteryDto) {
-  //   return this.lotteryService.update(+id, updateLotteryDto);
-  // }
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateLotteryDto: UpdateLotteryDto) {
+    return this.lotteryService.update(+id, updateLotteryDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

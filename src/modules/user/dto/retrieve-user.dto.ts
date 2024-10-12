@@ -2,7 +2,7 @@ import { User } from 'src/modules/mikroorm/entities/User';
 
 export class RetrieveUserDto {
   constructor(user: User) {
-    this.id = user.id.toString();
+    this.id = user.id;
     this.chatId = user.chatId;
     this.username = user.username;
     this.credentials = user.credentials;
@@ -10,10 +10,10 @@ export class RetrieveUserDto {
     this.role = user.role;
     this.phone = user.phone;
     this.createdAt = user.createdAt.toLocaleString();
-    this.city = user.city?.id.toString() || '';
+    this.cityId = user.city?.id;
     this.registered = user.registered;
   }
-  id: string;
+  id: number;
   chatId: string;
   username: string;
   credentials: string;
@@ -22,6 +22,6 @@ export class RetrieveUserDto {
   phone: string;
   registered: boolean;
   promo: string;
-  city: string;
+  cityId: number;
   createdAt: string;
 }

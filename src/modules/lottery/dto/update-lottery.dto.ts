@@ -1,8 +1,9 @@
-import { IsDateString, IsNumberString } from 'class-validator';
+import { IsDateString, IsEnum } from 'class-validator';
+import { LotteryState } from 'src/modules/mikroorm/entities/Lottery';
 
 export class UpdateLotteryDto {
-  @IsNumberString()
-  status: string;
+  @IsEnum(LotteryState)
+  status: LotteryState;
 
   @IsDateString()
   start: Date;

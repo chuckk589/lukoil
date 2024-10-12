@@ -1,7 +1,10 @@
 import { Check } from 'src/modules/mikroorm/entities/Check';
-import { BotContext, BotLotteryDto, LOCALES } from '../bot.types';
+import { BotContext, BotWinner, LOCALES } from '../bot.types';
 import i18n from '../middleware/i18n';
-import { Locale } from 'src/modules/mikroorm/entities/User';
+import { Lottery } from 'src/modules/mikroorm/entities/Lottery';
+import { RetrieveWinnerDto } from 'src/modules/lottery/dto/retrieve-lottery.dto';
+import { DateTime } from 'luxon';
+import { Winner } from 'src/modules/mikroorm/entities/Winner';
 
 export function match(key: string): RegExp {
   const locales: string[] = i18n.availableLocales();
@@ -25,11 +28,11 @@ export const label = (text: LOCALES) => {
 };
 
 export const checkMessage = (ctx: BotContext, checks: Check[]): string => {
-  if (!checks.length) return ctx.i18n.t('no_checks');
+  if (!checks.length) return ctx.i18n.t('no_codes');
   const message = checks.reduce((s, c) => {
-    s += `\n${c.fancyId} - ${ctx.i18n.t(c.status.name)}`;
+    s += `\n${c.fancyId}`;
     return s;
-  }, ctx.i18n.t('my_checks'));
+  }, ctx.i18n.t('my_codes'));
   return message;
 };
 
@@ -73,11 +76,10 @@ export const composeMyTicketMessage = (ctx: BotContext): string => {
   return message;
 };
 
-export const prizeMessage = (ctx: BotContext, checks: Check[]): string => {
-  const wonChecks = checks.filter((c) => c.winners?.getItems().length);
-  if (!wonChecks.length) return ctx.i18n.t('no_prizes');
-  return wonChecks.reduce((s: string, c: Check) => {
-    s += `\n${c.fancyId} - ${c.winners.getItems().reduce((s, w) => s + ctx.i18n.t(w.lottery.prize.name) + '\n', '')}`;
+export const prizeMessage = (ctx: BotContext, checks: Winner[]): string => {
+  if (!checks.length) return ctx.i18n.t('no_prizes');
+  return checks.reduce((s: string, w: Winner) => {
+    s += `\n${w.check.fancyId} - ${ctx.i18n.t(w.lottery.prize.prizeType as LOCALES)}`;
     return s;
   }, ctx.i18n.t('my_prizes'));
 };
@@ -87,31 +89,41 @@ export const winnersMessage = (ctx: BotContext): string => {
 };
 
 export const prizeMessageWeek = (ctx: BotContext, week: number): string => {
-  if (!ctx.session.winners.length) return ctx.i18n.t('no_winners_yet');
-  const winners = ctx.session.winners.filter((w) => w.week === week);
-  return winners.reduce((s: string, c: BotLotteryDto, index: number) => {
-    c.winners.forEach((w) => {
-      s += `\n${c.date} - ${ctx.i18n.t(c.prize)} - ${w.phone}`;
-    });
-    if (index < winners.length - 1) s += '\n\n▫️▫️▫️▫️▫️▫️▫️▫️\n\n';
+  const winners = ctx.session.winners.filter((w) => w.weekNum == week);
+  return winners.reduce((s: string, c: BotWinner) => {
+    s += `\n${c.date} - ${ctx.i18n.t(c.prize as LOCALES)} - ${c.phone}`;
     return s;
   }, '');
 };
+export const extractWinnersAndWeeks = <T extends RetrieveWinnerDto | BotWinner>(type: { new (dto: Winner): T }, lotteries: Lottery[]): T[] => {
+  const winners: T[] = [];
+  lotteries.forEach((l) => {
+    const week = DateTime.fromJSDate(l.start).weekNumber;
+    const _winners = l.winners.getItems();
+    for (const w of _winners) {
+      const winner = new type(w);
+      winner.weekNum = week;
+      if (type.name == 'BotWinner') {
+        (winner as BotWinner).date = DateTime.fromJSDate(l.start).toFormat('dd.LL.yyyy');
+        (winner as BotWinner).prize = l.prize.prizeType;
+      }
+      winners.push(winner);
+    }
+  });
+  winners.sort((a, b) => a.weekNum - b.weekNum);
+  const weeks = Array.from(new Set(winners.map((w) => w.weekNum)));
+  return winners.map((w) => ({ ...w, weekNum: weeks.indexOf(w.weekNum) + 1 }));
+};
 
-// // export const checkMessageByCount = (ctx: BotContext, check: CheckData): string => {
-// //   const translationKey = check.checkCount < 6 ? `checkAccepted_${check.checkCount}` : 'checkAccepted';
-// //   return ctx.i18n.t(translationKey, { id: check.fancyId, count: check.checkCount });
-// // };
-
-// export const getRandomArrayValues = (arr: any[], count: number): any[] => {
-//   const shuffled = arr.slice(0);
-//   const result: any[] = [];
-//   while (result.length < count) {
-//     const random = Math.floor(Math.random() * shuffled.length);
-//     //ensure user can't win twice
-//     if (result.some((r) => r.user.id === shuffled[random].user.id)) continue;
-//     result.push(shuffled[random]);
-//     shuffled.splice(random, 1);
-//   }
-//   return result;
-// };
+export const getRandomArrayValues = (arr: any[], count: number): any[] => {
+  const shuffled = arr.slice(0);
+  const result: any[] = [];
+  while (result.length < count) {
+    const random = Math.floor(Math.random() * shuffled.length);
+    //ensure user can't win twice
+    // if (result.some((r) => r.user.id === shuffled[random].user.id)) continue;
+    result.push(shuffled[random]);
+    shuffled.splice(random, 1);
+  }
+  return result;
+};

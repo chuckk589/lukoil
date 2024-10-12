@@ -25,6 +25,7 @@ type Events = {
       disabled: boolean;
       key: string;
       value: string;
+      valueField: string;
       dependsOn: {
         key: string;
         value: string;

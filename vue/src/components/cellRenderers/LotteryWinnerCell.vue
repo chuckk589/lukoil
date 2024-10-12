@@ -55,12 +55,12 @@ export default {
             value: this.params.data.primary,
             options: [
               {
-                value: true,
-                title: 'Да',
+                name: true,
+                description: 'Да',
               },
               {
-                value: false,
-                title: 'Нет',
+                name: false,
+                description: 'Нет',
               },
             ],
           },
@@ -72,12 +72,12 @@ export default {
             value: this.params.data.notified,
             options: [
               {
-                value: true,
-                title: 'Да',
+                name: true,
+                description: 'Да',
               },
               {
-                value: false,
-                title: 'Нет',
+                name: false,
+                description: 'Нет',
               },
             ],
           },
@@ -89,12 +89,12 @@ export default {
             value: this.params.data.confirmed,
             options: [
               {
-                value: true,
-                title: 'Да',
+                name: true,
+                description: 'Да',
               },
               {
-                value: false,
-                title: 'Нет',
+                name: false,
+                description: 'Нет',
               },
             ],
           },

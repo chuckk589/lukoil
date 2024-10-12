@@ -1,25 +1,28 @@
 <template>
-  <AgGridVue
-    class="ag-theme-alpine"
-    :column-defs="columnDefs"
-    :default-col-def="defaultColDef"
-    suppressCellFocus
-    :get-row-id="getRowId"
-    :row-data="rowData"
-    animateRows
-    style="height: 100%"
-    @grid-ready="onGridReady"
-    suppressRowClickSelection
-    suppressExcelExport
-    pagination
-    :defaultCsvExportParams="defaultCsvExportParams"
-  >
-  </AgGridVue>
+  <div class="h-100">
+    <AgGridVue
+      class="ag-theme-alpine"
+      :column-defs="columnDefs"
+      :default-col-def="defaultColDef"
+      suppressCellFocus
+      :get-row-id="getRowId"
+      :row-data="rowData"
+      animateRows
+      style="height: 100%"
+      @grid-ready="onGridReady"
+      suppressRowClickSelection
+      suppressExcelExport
+      pagination
+      :defaultCsvExportParams="defaultCsvExportParams"
+    >
+    </AgGridVue>
+  </div>
 </template>
 
 <script>
 import { AgGridVue } from 'ag-grid-vue3';
 import CheckCell from '../components/cellRenderers/CheckCell.vue';
+import { agGridMixin } from '@/mixins/agGrid';
 export default {
   name: 'ChecksView',
   components: {
@@ -27,6 +30,7 @@ export default {
     // eslint-disable-next-line vue/no-unused-components
     CheckCell,
   },
+  mixins: [agGridMixin],
   data() {
     return {
       columnDefs: [
@@ -35,42 +39,50 @@ export default {
           field: 'id',
         },
         { field: 'fancyId', headerName: 'Id чека' },
-
         { field: 'credentials', headerName: 'Имя' },
         {
           field: 'locale',
           headerName: 'Язык',
-          valueFormatter: (params) =>
-            this.$ctable.locales.find((c) => c.value == params.value)?.title,
-          sortable: true,
+          valueFormatter: this.cTableFormatter('locales'),
+          filter: true,
+          filterParams: {
+            valueFormatter: this.cTableFormatter('locales'),
+          },
         },
         { field: 'phone', headerName: 'Номер' },
-
-        {
-          field: 'status',
-          headerName: 'Статус чека',
-          valueFormatter: (params) =>
-            this.$ctable.check_statuses.find((c) => c.value == params.value)
-              ?.title,
-          sortable: true,
-        },
-
+        { field: 'code', headerName: 'Код' },
+        { field: 'utmSource', headerName: 'utmSource' },
+        // {
+        //   field: 'status',
+        //   headerName: 'Статус чека',
+        //   valueFormatter: this.cTableFormatter('check_statuses'),
+        //   filter: true,
+        //   filterParams: {
+        //     valueFormatter: this.cTableFormatter('check_statuses'),
+        //   },
+        // },
         {
           field: 'createdAt',
           headerName: 'Дата регистрации',
-          sortable: true,
+          filter: 'agDateColumnFilter',
           valueFormatter: (params) => new Date(params.value).toLocaleString(),
+          filterParams: {
+            comparator: this.dateComparator,
+          },
         },
-        {
-          field: 'action',
-          headerName: '',
-          cellRenderer: 'CheckCell',
-        },
+        // {
+        //   field: 'action',
+        //   headerName: '',
+        //   filter: false,
+        //   cellRenderer: 'CheckCell',
+        // },
       ],
       defaultCsvExportParams: null,
       gridApi: null,
       defaultColDef: {
         sortable: true,
+        filter: 'agTextColumnFilter',
+        floatingFilter: true,
         flex: 1,
       },
       getRowId: function (params) {
@@ -94,24 +106,7 @@ export default {
         this.rowData[index] = evt;
         this.gridApi.applyTransaction({ update: [evt] });
       });
-      this.defaultCsvExportParams = {
-        columnKeys: this.columnDefs
-          .filter((c) => c.headerName)
-          .map((c) => c.field),
-        processCellCallback: (params) => {
-          const colDef = params.column.getColDef();
-          if (colDef.valueFormatter) {
-            const valueFormatterParams = {
-              ...params,
-              data: params.node.data,
-              node: params.node,
-              colDef: params.column.getColDef(),
-            };
-            return colDef.valueFormatter(valueFormatterParams);
-          }
-          return params.value;
-        },
-      };
+      this.defaultCsvExportParams = this.agGridExportParams();
     },
   },
 };

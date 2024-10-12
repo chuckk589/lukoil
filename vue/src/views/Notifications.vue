@@ -71,8 +71,8 @@
             ></AgGridVue>
             <v-file-input
               density="compact"
-              label="Добавить изображения"
-              accept="image/png, image/jpeg, image/bmp"
+              label="Добавить медиа"
+              accept="image/png, image/jpeg, image/bmp, image/gif, video/mp4"
               multiple
               filled
               v-model="files"
@@ -123,9 +123,11 @@
 
 <script>
 import { AgGridVue } from 'ag-grid-vue3';
+import { agGridMixin } from '@/mixins/agGrid';
 export default {
   name: 'NotificationsView',
   components: { AgGridVue },
+  mixins: [agGridMixin],
   data() {
     return {
       current: 'tab-new',
@@ -138,9 +140,7 @@ export default {
         {
           field: 'status',
           headerName: 'Статус рассылки',
-          valueFormatter: (params) =>
-            this.$ctable.check_statuses.find((c) => c.value == params.value)
-              ?.title,
+          valueFormatter: this.cTableFormatter('not_statuses'),
           sortable: true,
         },
         { field: 'delivered', headerName: 'Фактически доставлено' },
@@ -255,10 +255,10 @@ export default {
     preview() {
       const formData = new FormData();
       this.text && formData.append('text', this.text);
-      formData.append('buttons', JSON.stringify(this.rowDataB));
-      formData.append('templateKey', this.template);
+      this.template && formData.append('templateKey', this.template);
       formData.append('registeredOnly', this.registeredOnly);
       formData.append('checkOwnersOnly', this.checkOwnersOnly);
+      formData.append('buttons', JSON.stringify(this.rowDataB));
       for (let i = 0; i < this.files.length; i++) {
         formData.append('images', this.files[i]);
       }

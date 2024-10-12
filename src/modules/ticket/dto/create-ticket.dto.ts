@@ -1,14 +1,13 @@
-import { IsNumberString, IsString, ValidateIf } from 'class-validator';
+import { ApiHideProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CreateTicketDto {
   @IsString()
   object!: string;
 
-  @IsNumberString()
-  @ValidateIf((o) => o.userId === undefined)
+  @ApiHideProperty()
   chatId?: string;
 
-  @IsNumberString()
-  @ValidateIf((o) => o.chatId === undefined)
-  userId?: string;
+  @ApiHideProperty()
+  userId?: number;
 }

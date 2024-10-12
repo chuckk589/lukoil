@@ -21,6 +21,7 @@
 <script>
 import { AgGridVue } from 'ag-grid-vue3';
 import UserCell from '../components/cellRenderers/UserCell.vue';
+import { agGridMixin } from '@/mixins/agGrid';
 export default {
   name: 'UsersView',
   components: {
@@ -28,6 +29,7 @@ export default {
     // eslint-disable-next-line vue/no-unused-components
     UserCell,
   },
+  mixins: [agGridMixin],
   data() {
     return {
       columnDefs: [
@@ -36,48 +38,61 @@ export default {
           field: 'id',
         },
         { field: 'chatId', headerName: 'Telegram Id' },
-
-        { field: 'credentials', headerName: 'Имя' },
         {
           field: 'locale',
           headerName: 'Язык',
-          valueFormatter: (params) =>
-            this.$ctable.locales.find((c) => c.value == params.value)?.title,
-          sortable: true,
+          valueFormatter: this.cTableFormatter('locales'),
+          filter: true,
+          filterParams: {
+            valueFormatter: this.cTableFormatter('locales'),
+          },
         },
         { field: 'phone', headerName: 'Номер' },
         {
-          field: 'promo',
-          headerName: 'Промо',
-          valueFormatter: (params) =>
-            this.$ctable.promotions.find((c) => c.value == params.value)?.title,
-          sortable: true,
+          field: 'cityId',
+          headerName: 'Город',
+          valueFormatter: this.cTableFormatter('cities'),
+          filterParams: {
+            valueFormatter: this.cTableFormatter('cities'),
+          },
+          filter: true,
         },
         {
-          field: 'city',
-          headerName: 'Город',
-          valueFormatter: (params) =>
-            this.$ctable.cities.find((c) => c.value == params.value)?.title,
-          sortable: true,
+          field: 'credentials',
+          headerName: 'ФИО',
         },
         {
           field: 'role',
           headerName: 'Роль',
-          valueFormatter: (params) =>
-            this.$ctable.roles.find((c) => c.value == params.value)?.title,
-          sortable: true,
+          filter: true,
+          valueFormatter: this.cTableFormatter('roles'),
+          filterParams: {
+            valueFormatter: this.cTableFormatter('roles'),
+          },
         },
         {
           field: 'registered',
           headerName: 'Регистрация пройдена',
+          filter: true,
           valueFormatter: (params) => (params.value ? 'Да' : 'Нет'),
-          sortable: true,
+          filterParams: {
+            valueFormatter: (params) => (params.value == 'true' ? 'Да' : 'Нет'),
+          },
         },
 
-        { field: 'createdAt', headerName: 'Дата регистрации', sortable: true },
+        {
+          field: 'createdAt',
+          headerName: 'Дата регистрации',
+          filter: 'agDateColumnFilter',
+          valueFormatter: (params) => new Date(params.value).toLocaleString(),
+          filterParams: {
+            comparator: this.dateComparator,
+          },
+        },
         {
           field: 'action',
           headerName: '',
+          filter: false,
           cellRenderer: 'UserCell',
         },
       ],
@@ -85,6 +100,8 @@ export default {
       gridApi: null,
       defaultColDef: {
         sortable: true,
+        filter: 'agTextColumnFilter',
+        floatingFilter: true,
         flex: 1,
       },
       getRowId: function (params) {
@@ -108,24 +125,7 @@ export default {
         const rowNode = this.gridApi.getRowNode(evt.id);
         rowNode.setData(evt);
       });
-      this.defaultCsvExportParams = {
-        columnKeys: this.columnDefs
-          .filter((c) => c.headerName)
-          .map((c) => c.field),
-        processCellCallback: (params) => {
-          const colDef = params.column.getColDef();
-          if (colDef.valueFormatter) {
-            const valueFormatterParams = {
-              ...params,
-              data: params.node.data,
-              node: params.node,
-              colDef: params.column.getColDef(),
-            };
-            return colDef.valueFormatter(valueFormatterParams);
-          }
-          return params.value;
-        },
-      };
+      this.defaultCsvExportParams = this.agGridExportParams();
     },
   },
 };

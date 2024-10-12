@@ -25,12 +25,13 @@ export class GlobalComposer extends BaseComposer {
     if (isPresent) {
       ctx.session.setStep(BotStep.default);
 
-      await ctx.reply(ctx.i18n.t('welcome_back'), { reply_markup: this.mainMenu.getMenu() });
+      const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { caption: ctx.i18n.t('main_menu'), reply_markup: this.mainMenu.getMenu() });
+      cache.cacheAsset('start', msg);
     } else {
       ctx.session.userData.phone = ctx.message.contact.phone_number;
       ctx.session.step = BotStep.name;
 
-      await ctx.reply(ctx.i18n.t('ask_name'), { reply_markup: this.regMenu.getMenu() });
+      await ctx.reply(ctx.i18n.t('ask_name'), { reply_markup: { remove_keyboard: true } });
     }
   };
 
@@ -44,24 +45,16 @@ export class GlobalComposer extends BaseComposer {
 
   private startHandler = async (ctx: BotContext) => {
     ctx.session.setStep(BotStep.default);
-    // const user = await this.globalService.findOrCreateUser(ctx.from.id, ctx.from.username);
     const user = await this.globalService.findUser(ctx.from.id);
 
     if (user) {
       ctx.i18n.locale(user.locale);
-      await ctx.reply(ctx.i18n.t('main_menu'), { reply_markup: this.mainMenu.getMenu() });
+      const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { caption: ctx.i18n.t('main_menu'), reply_markup: this.mainMenu.getMenu() });
+      cache.cacheAsset('start', msg);
     } else {
       const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { caption: ctx.i18n.t('start'), reply_markup: this.greetingMenu.getMenu() });
       cache.cacheAsset('start', msg);
     }
-    // ctx.session.isRegistered = user.registered;
-    // ctx.i18n.locale(user.locale);
-    // if (user.registered) {
-    //   await ctx.reply(ctx.i18n.t('main_menu'), { reply_markup: this.mainMenu.getMenu() });
-    // } else {
-    // const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { reply_markup: this.greetingMenu.getMenu() });
-    // cache.cacheAsset('start', msg);
-    // }
   };
   private ticketReplyHandler = async (ctx: BotContext) => {
     if (ctx.message) {
@@ -84,12 +77,29 @@ export class GlobalComposer extends BaseComposer {
     await this.globalService.clean(ctx);
     await ctx.reply('Cleaned', { reply_markup: { remove_keyboard: true } });
   };
+  private codeHandler = async (ctx: BotContext) => {
+    if (ctx.message.text) {
+      try {
+        const check = await this.globalService.uploadCodeForUser(ctx.from.id, ctx.message.text);
+        if (check) {
+          await ctx.reply(ctx.i18n.t('request_accepted', { check_id: check.fancyId }));
+        }
+      } catch (error) {
+        if (error.message == 'code_not_found' || error.message == 'code_already_used' || error.message == 'max_code_attempts') {
+          await ctx.reply(ctx.i18n.t(error.message));
+        }
+      } finally {
+        ctx.session.step = BotStep.default;
+      }
+    }
+  };
 
   @Command(BotCommands.START)
   start = this.startHandler;
 
   @Command(BotCommands.CLEAN)
   clean = this.cleanHandler;
+
   @On(':contact')
   contact = async (ctx: BotContext) => {
     if (ctx.session.step == BotStep.default) {
@@ -98,5 +108,9 @@ export class GlobalComposer extends BaseComposer {
   };
 
   @Use()
-  router = new Router<BotContext>((ctx: BotContext) => ctx.session.step).route(BotStep.name, this.nameHandler).route(BotStep.ticketsReply, this.ticketReplyHandler).route(BotStep.ticketsCreate, this.ticketCreateHandler);
+  router = new Router<BotContext>((ctx: BotContext) => ctx.session.step)
+    .route(BotStep.name, this.nameHandler)
+    .route(BotStep.ticketsReply, this.ticketReplyHandler)
+    .route(BotStep.ticketsCreate, this.ticketCreateHandler)
+    .route(BotStep.code, this.codeHandler);
 }

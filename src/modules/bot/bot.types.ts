@@ -4,9 +4,7 @@ import { Context, SessionFlavor, Api, Composer } from 'grammy';
 import { Update, UserFromGetMe } from 'grammy/types';
 import { RetrieveTicketDto } from '../ticket/dto/retrieve-ticket.dto';
 import { ru } from './helpers/localeDonors/ru';
-import { DateTime } from 'luxon';
-import { Lottery } from '../mikroorm/entities/Lottery';
-import { PrizeType } from '../mikroorm/entities/Prize';
+import { Winner } from '../mikroorm/entities/Winner';
 
 type I18nContextMapped = Omit<I18nContext, 't'> & { t(resourceKey: LOCALES, templateData?: Readonly<TemplateData>): string };
 type I18nContextMappedFlavor = { readonly i18n: I18nContextMapped };
@@ -19,6 +17,7 @@ export enum BotStep {
   // resident = 'resident',
   name = 'name',
   city = 'city',
+  code = 'code',
   // check = 'check',
   // help = 'help',
   tickets = 'tickets',
@@ -68,7 +67,7 @@ export interface Session {
   menuId: number;
   step: BotStep;
   //FIXME:
-  winners: any[];
+  winners: BotWinner[];
   userData: {
     tickets: {
       data: RetrieveTicketDto[];
@@ -82,16 +81,13 @@ export interface Session {
   setStep(step: BotStep): void;
 }
 export type LOCALES = keyof typeof ru;
-export class BotLotteryDto {
-  constructor(lottery: Lottery) {
-    this.week = DateTime.fromJSDate(lottery.end).weekNumber;
-    this.prize = lottery.prize.name;
-    this.winners = lottery.winners.getItems().map((winner) => ({ phone: winner.check.user.phone.slice(0, -6) + 'XXXX' + winner.check.user.phone.slice(-2) }));
-    //to dd.mm.yyyy
-    this.date = DateTime.fromJSDate(lottery.end).toFormat('dd.LL.yyyy');
+
+export class BotWinner {
+  constructor(winner: Winner) {
+    this.phone = winner.check.user.phone.slice(0, -6) + 'XXXX' + winner.check.user.phone.slice(-2);
   }
-  week: number;
-  prize: PrizeType;
+  prize: string;
   date: string;
-  winners: { phone: string }[];
+  phone: string;
+  weekNum: number;
 }

@@ -1,13 +1,10 @@
 import { Menu } from '@grammyjs/menu';
-import { Keyboard } from 'grammy';
-import { Locale } from 'src/modules/mikroorm/entities/User';
-import { BaseComposer, BaseMenu, BotContext, BotStep } from '../bot.types';
-import { ComposerController, MenuController, Use } from '../common/decorators';
-import { composeMyTicketMessage, label, prizeMessageWeek } from '../common/helpers';
+import { BaseMenu, BotContext, BotStep } from '../bot.types';
+import { MenuController, Use } from '../common/decorators';
+import { composeMyTicketMessage, label } from '../common/helpers';
 import { GlobalService } from '../services/global.service';
-import cache from '../common/cache';
 import { BotMenus } from '../bot.constants';
-import { TicketStatus } from 'src/modules/mikroorm/entities/TicketMessage';
+import { TicketStatus } from 'src/modules/mikroorm/entities/Ticket';
 
 @MenuController
 export class TicketMenu extends BaseMenu {

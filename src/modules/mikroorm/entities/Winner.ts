@@ -1,9 +1,8 @@
 import { Entity, EntityRepositoryType, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Check } from './Check';
 import { CustomBaseEntity } from './CustomBaseEntity';
-import { Lottery } from './Lottery';
+import { Lottery, LotteryState } from './Lottery';
 import { BaseRepo } from '../repo/base.repo';
-import { LotteryState } from './LotteryStatus';
 
 @Entity({ repository: () => WinnerRepo })
 export class Winner extends CustomBaseEntity {
@@ -30,22 +29,6 @@ export class Winner extends CustomBaseEntity {
 
 export class WinnerRepo extends BaseRepo<Winner> {
   async findAllForUser(userId: number) {
-    return await this.find({ check: { user: { id: userId } }, confirmed: true, lottery: { status: { name: LotteryState.ENDED } } }, { populate: ['check.user', 'lottery.status'] });
-  }
-  async findAllConfirmedAndFinished() {
-    // return await this.find({ confirmed: true, lottery: { status: { name: LotteryState.ENDED } } }, { populate: ['check.user', 'lottery.status'] });
+    return await this.find({ check: { user: { id: userId } }, confirmed: true, lottery: { status: LotteryState.ENDED } }, { populate: ['check.user', 'lottery.prize', 'check.code'] });
   }
 }
-// {
-//   status: { name: LotteryState.ENDED },
-// },
-// {
-//   populate: ['winners.check', 'winners.check.user', 'prize'],
-//   refresh: true,
-//   populateWhere: {
-//     winners: {
-//       confirmed: true,
-//       check: { status: { name: CheckState.APPROVED } },
-//     },
-//   },
-// },

@@ -30,9 +30,19 @@ const router = createRouter({
           component: () => import('../views/Locales.vue'),
         },
         {
+          path: 'tickets',
+          name: 'tickets',
+          component: () => import('../views/Tickets.vue'),
+        },
+        {
           path: 'notifications',
           name: 'notifications',
           component: () => import('../views/Notifications.vue'),
+        },
+        {
+          path: 'dashboard',
+          name: 'dashboard',
+          component: () => import('../views/Dashboard.vue'),
         },
       ],
     },

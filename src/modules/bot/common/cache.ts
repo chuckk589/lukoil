@@ -10,18 +10,14 @@ class Cache {
   private _assets: { [key: string]: string } = {
     oferta_ru: 'dist/public/assets/oferta_ru.pdf',
     oferta_kz: 'dist/public/assets/oferta_kz.pdf',
-    // start: 'dist/public/assets/start.png',
-    // about_ru: 'dist/public/assets/about_ru.png',
-    // about_kz: 'dist/public/assets/about_kz.png',
-    // parCheck_ru: 'dist/public/assets/parCheck_ru.png',
-    // parCheck_kz: 'dist/public/assets/parCheck_kz.png',
-    // parBarcode_ru: 'dist/public/assets/parBarcode_ru.png',
-    // parBarcode_kz: 'dist/public/assets/parBarcode_kz.png',
-    // contacts_ru: 'dist/public/assets/contacts_ru.png',
-    // contacts_kz: 'dist/public/assets/contacts_kz.png',
+    city_ru: 'dist/public/assets/city_ru.png',
+    city_kz: 'dist/public/assets/city_kz.png',
+    lang_ru: 'dist/public/assets/lang_ru.png',
+    lang_kz: 'dist/public/assets/lang_kz.png',
     start: 'dist/public/assets/start.png',
     phone: 'dist/public/assets/phone.png',
-    about: 'dist/public/assets/about.png',
+    about_ru: 'dist/public/assets/about_ru.png',
+    about_kz: 'dist/public/assets/about_kz.png',
   };
   public resolveAsset(name: string): string | InputFile {
     if (this._cache.has(name)) return this._cache.get(name);

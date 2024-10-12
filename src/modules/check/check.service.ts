@@ -1,33 +1,41 @@
-import { EntityManager } from '@mikro-orm/mysql';
-import { Inject, Injectable } from '@nestjs/common';
-import { Bot } from 'grammy';
-import { BOT_NAME } from 'src/constants';
-import { BotContext } from 'src/modules/bot/bot.types';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JWTTokenPayload } from '../auth/auth.types';
 import { CreateCheckDto } from './dto/create-check.dto';
-import { Check } from '../mikroorm/entities/Check';
+import { Check, utmSource } from '../mikroorm/entities/Check';
 import { RetrieveCheckDto } from './dto/retrieve-check.dto';
+import { MikroORM } from '@mikro-orm/core';
+import { User } from '../mikroorm/entities/User';
 
 @Injectable()
 export class CheckService {
   //   // const approvedAmmount = user.checks.getItems().filter((check) => check.status.name === CheckState.APPROVED).length;
 
-  constructor(private readonly em: EntityManager, @Inject(BOT_NAME) private bot: Bot<BotContext>) {}
+  constructor(private readonly orm: MikroORM) {}
 
-  async create(user: JWTTokenPayload, createCheckDto: CreateCheckDto) {
-    const repo = this.em.getRepository(Check);
-    const check = await repo.createCheckForUser(user.id, createCheckDto.value);
+  async create(reqUser: JWTTokenPayload, createCheckDto: CreateCheckDto) {
+    const repo = this.orm.em.getRepository(Check);
+
+    const user = await this.orm.em.getRepository(User).findOneOrFail(reqUser.id);
+
+    const check = await repo.createAndAddCheckForUser(user, createCheckDto.value, utmSource.WEB).catch((er) => {
+      throw new HttpException(er.message, HttpStatus.BAD_REQUEST);
+    });
+
     return new RetrieveCheckDto(check);
   }
 
-  async findAll(user: JWTTokenPayload) {
-    const repo = this.em.getRepository(Check);
+  async findAllMe(user: JWTTokenPayload) {
+    const repo = this.orm.em.getRepository(Check);
+
     const checks = await repo.findAllForUser(user.id);
     return checks.map((check) => new RetrieveCheckDto(check));
   }
-  // async findAll(): Promise<RetrieveCheckDto[]> {
-  //   return (await this.em.find(Check, {}, { populate: ['user', 'status.translation.values', 'status.comment.values'] })).map((check) => new RetrieveCheckDto(check));
-  // }
+  async findAll() {
+    const repo = this.orm.em.getRepository(Check);
+
+    const checks = await repo.findAllChecks();
+    return checks.map((check) => new RetrieveCheckDto(check));
+  }
 
   // async update(id: number, updateCheckDto: UpdateCheckDto) {
   //   const user = await this.em.findOneOrFail(User, { checks: { id } }, { populate: ['checks', 'checks.status'] });

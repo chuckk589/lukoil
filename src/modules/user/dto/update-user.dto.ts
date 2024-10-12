@@ -1,10 +1,10 @@
-import { IsEnum, IsIn, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Locale, UserRole } from 'src/modules/mikroorm/entities/User';
 
 export class UpdateUserDto {
-  @IsOptional()
-  @IsString()
-  credentials?: string;
+  // @IsOptional()
+  // @IsString()
+  // credentials?: string;
 
   @IsOptional()
   @IsEnum(Locale)
@@ -21,7 +21,7 @@ export class UpdateUserDto {
   @IsOptional()
   registered?: boolean;
 
-  @IsOptional()
-  @IsNumberString()
-  promo?: string;
+  // @IsOptional()
+  // @IsNumberString()
+  // promo?: string;
 }

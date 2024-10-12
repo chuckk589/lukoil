@@ -5,7 +5,7 @@
 
       <!-- <v-toolbar-title>Application</v-toolbar-title> -->
     </v-app-bar>
-    <v-navigation-drawer permanent v-model="drawer">
+    <v-navigation-drawer permanent v-model="drawer" style="z-index: 1002">
       <v-list>
         <v-list-item to="/users" value="1" color="#1867C0">
           <template v-slot:prepend>
@@ -19,7 +19,7 @@
             <v-icon class="mr-5" icon="mdi-image-area"></v-icon>
           </template>
 
-          <v-list-item-title>Чеки</v-list-item-title>
+          <v-list-item-title>Коды</v-list-item-title>
         </v-list-item>
         <v-list-item to="/lottery" value="3" color="#1867C0">
           <template v-slot:prepend>
@@ -35,12 +35,26 @@
 
           <v-list-item-title>Локали</v-list-item-title>
         </v-list-item>
-        <v-list-item to="/notifications" value="6" color="#1867C0">
+        <v-list-item to="/tickets" value="6" color="#1867C0">
+          <template v-slot:prepend>
+            <v-icon class="mr-5" icon="mdi-account-alert"></v-icon>
+          </template>
+
+          <v-list-item-title>Обращения</v-list-item-title>
+        </v-list-item>
+        <v-list-item to="/notifications" value="7" color="#1867C0">
           <template v-slot:prepend>
             <v-icon class="mr-5" icon="mdi-email"></v-icon>
           </template>
 
           <v-list-item-title>Рассылки</v-list-item-title>
+        </v-list-item>
+        <v-list-item to="/dashboard" value="8" color="#1867C0">
+          <template v-slot:prepend>
+            <v-icon class="mr-5" icon="mdi-cog"></v-icon>
+          </template>
+
+          <v-list-item-title>Статистика</v-list-item-title>
         </v-list-item>
       </v-list>
       <template v-slot:append>

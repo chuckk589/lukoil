@@ -1,4 +1,4 @@
-import { BeforeCreate, Collection, Entity, EntityRepositoryType, Enum, EventArgs, ManyToOne, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, EntityRepositoryType, Enum, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { CustomBaseEntity } from './CustomBaseEntity';
 import { User } from './User';
 import { TicketMessage } from './TicketMessage';
@@ -6,6 +6,7 @@ import { BaseRepo } from '../repo/base.repo';
 
 export enum TicketStatus {
   PENDING = 'pending',
+  ANSWERED = 'answered',
   CLOSED = 'closed',
 }
 

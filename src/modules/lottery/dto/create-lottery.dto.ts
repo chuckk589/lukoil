@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsNumberString } from 'class-validator';
+import { IsDateString, IsNumber, IsNumberString } from 'class-validator';
 
 export class CreateLotteryDto {
   @IsNumberString()
@@ -7,12 +7,12 @@ export class CreateLotteryDto {
   // @IsNumberString()
   reserveWinners: string;
 
-  @IsNumberString()
-  prize: string;
+  @IsNumber()
+  prize: number;
 
   @IsDateString()
-  start: Date;
+  start: string;
 
   @IsDateString()
-  end: Date;
+  end: string;
 }

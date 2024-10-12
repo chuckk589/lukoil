@@ -26,4 +26,9 @@ export class StatusController {
   updateLocales(@Body() updateLocaleDto: UpdateLocaleDto) {
     return this.statusService.updateLocales(updateLocaleDto);
   }
+  @Get('/stats')
+  @ApiExcludeEndpoint()
+  findStatistics() {
+    return this.statusService.findStatistics();
+  }
 }

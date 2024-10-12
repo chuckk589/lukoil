@@ -24,11 +24,11 @@ export default {
         header: 'Редактировать',
         eventName: 'edit-user',
         fields: [
-          {
-            key: 'credentials',
-            label: 'Имя',
-            value: this.params.data.credentials,
-          },
+          // {
+          //   key: 'credentials',
+          //   label: 'Имя',
+          //   value: this.params.data.credentials,
+          // },
           {
             key: 'locale',
             label: 'Язык',
@@ -41,35 +41,19 @@ export default {
             label: 'Номер',
             value: this.params.data.phone,
           },
-          {
-            key: 'promo',
-            label: 'Промо',
-            type: 'select',
-            value: this.params.data.promo,
-            options: this.$ctable.promotions,
-          },
+          // {
+          //   key: 'promo',
+          //   label: 'Промо',
+          //   type: 'select',
+          //   value: this.params.data.promo,
+          //   options: this.$ctable.promotions,
+          // },
           {
             key: 'role',
             label: 'Роль',
             type: 'select',
             value: this.params.data.role,
             options: this.$ctable.roles,
-          },
-          {
-            key: 'registered',
-            label: 'Статус регистрации',
-            type: 'select',
-            value: this.params.data.registered,
-            options: [
-              {
-                value: true,
-                title: 'Да',
-              },
-              {
-                value: false,
-                title: 'Нет',
-              },
-            ],
           },
         ],
       });

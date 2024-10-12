@@ -41,8 +41,11 @@
 import { AgGridVue } from 'ag-grid-vue3';
 import LotteryCell from '../components/cellRenderers/LotteryCell.vue';
 import LotteryWinnerCell from '../components/cellRenderers/LotteryWinnerCell.vue';
+import { agGridMixin } from '../mixins/agGrid';
+
 export default {
   name: 'LotteryView',
+  mixins: [agGridMixin],
   components: {
     AgGridVue,
     // eslint-disable-next-line vue/no-unused-components
@@ -62,29 +65,40 @@ export default {
         {
           field: 'start',
           headerName: 'Начало',
+          filter: 'agDateColumnFilter',
           valueFormatter: (params) =>
             new Date(params.value).toLocaleDateString(),
+          filterParams: {
+            comparator: this.dateComparator,
+          },
         },
         {
           field: 'end',
           headerName: 'Конец',
+          filter: 'agDateColumnFilter',
           valueFormatter: (params) =>
             new Date(params.value).toLocaleDateString(),
+          filterParams: {
+            comparator: this.dateComparator,
+          },
         },
         {
           field: 'status',
           headerName: 'Статус',
-          valueFormatter: (params) =>
-            this.$ctable.lottery_statuses.find((c) => c.value == params.value)
-              ?.title,
-          sortable: true,
+          valueFormatter: this.cTableFormatter('lottery_statuses'),
+          filter: true,
+          filterParams: {
+            valueFormatter: this.cTableFormatter('lottery_statuses'),
+          },
         },
         {
-          field: 'prize',
+          field: 'prizeId',
           headerName: 'Приз',
-          valueFormatter: (params) =>
-            this.$ctable.prizes.find((c) => c.value == params.value)?.title,
-          sortable: true,
+          valueFormatter: this.cTableFormatter('prizes'),
+          filter: true,
+          filterParams: {
+            valueFormatter: this.cTableFormatter('prizes'),
+          },
         },
         { field: 'primaryWinners', headerName: 'Основные победители' },
         { field: 'reserveWinners', headerName: 'Резервные победители' },
@@ -93,10 +107,15 @@ export default {
           headerName: 'Дата создания',
           valueFormatter: (params) =>
             new Date(params.value).toLocaleDateString(),
+          filter: 'agDateColumnFilter',
+          filterParams: {
+            comparator: this.dateComparator,
+          },
         },
         {
           field: 'action',
           headerName: '',
+          filter: false,
           cellRenderer: 'LotteryCell',
         },
       ],
@@ -125,18 +144,31 @@ export default {
               headerName: 'Уведомлен',
               valueFormatter: (params) => (params.value ? 'Да' : 'Нет'),
             },
-            { field: 'prize', headerName: 'Приз' },
+            // {
+            //   field: 'prizeValue',
+            //   headerName: 'Наименование приза',
+            //   valueFormatter: this.cTableFormatter('prize_values'),
+            //   filter: true,
+            //   filterParams: {
+            //     valueFormatter: this.cTableFormatter('prize_values'),
+            //   },
+            // },
             { field: 'fancyId', headerName: 'Id чека' },
             { field: 'credentials', headerName: 'Имя' },
             { field: 'phone', headerName: 'Телефон' },
             {
               field: 'action',
               headerName: '',
+              filter: false,
               cellRenderer: 'LotteryWinnerCell',
             },
           ],
+          onColumnVisible: this.onColumnVisible,
+          onGridReady: this.onGridReadyMD,
           defaultColDef: {
             sortable: true,
+            filter: 'agTextColumnFilter',
+            floatingFilter: true,
             flex: 1,
           },
         },
@@ -147,6 +179,8 @@ export default {
       gridApi: null,
       defaultColDef: {
         sortable: true,
+        filter: 'agTextColumnFilter',
+        floatingFilter: true,
         flex: 1,
       },
       getRowId: function (params) {
@@ -164,8 +198,21 @@ export default {
     this.$emitter.off('delete-winner');
   },
   methods: {
+    onColumnVisible(params) {
+      this.store.saveTableState(
+        this.$options.name,
+        params.columnApi.getColumnState(),
+      );
+    },
+    onGridReadyMD(params) {
+      params.columnApi.applyColumnState({
+        state: this.store.loadTableState(this.$options.name),
+        applyOrder: true,
+      });
+    },
     onGridReady(params) {
       this.gridApi = params.api;
+
       this.$http({ method: 'GET', url: `/v1/lottery/` }).then((res) => {
         this.rowData = res.data;
         this.gridApi.setRowData(this.rowData);
@@ -247,7 +294,8 @@ export default {
             key: 'prize',
             label: 'Что разыгрываем',
             type: 'select',
-            value: this.$ctable.prizes[0].value,
+            valueField: 'id',
+            value: this.$ctable.prizes[0].id,
             options: this.$ctable.prizes,
           },
         ],
@@ -304,7 +352,7 @@ export default {
                 const header = `${cur.id},${gridFormatters.createdAt({ value: cur.createdAt })},${gridFormatters.prize({ value: cur.prize })}`;
                 cur.winners.forEach((w) => {
                   // eslint-disable-next-line prettier/prettier
-                  sum = sum + header +`,${masterFormatters.primary({ value: w.primary })},${masterFormatters.confirmed({ value: w.confirmed })},${masterFormatters.notified({ value: w.notified })},${w.fancyId},${w.credentials},${w.phone},${w.prize}\n`;
+                  sum = sum + header + `,${masterFormatters.primary({ value: w.primary })},${masterFormatters.confirmed({ value: w.confirmed })},${masterFormatters.notified({ value: w.notified })},${w.fancyId},${w.credentials},${w.phone},${w.prize}\n`;
                 });
                 return sum;
               }, '');

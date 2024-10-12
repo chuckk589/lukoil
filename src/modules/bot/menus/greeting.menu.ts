@@ -1,10 +1,9 @@
 import { Menu } from '@grammyjs/menu';
 import { Keyboard } from 'grammy';
 import { Locale } from 'src/modules/mikroorm/entities/User';
-import { BaseComposer, BaseMenu, BotContext, BotStep } from '../bot.types';
-import { ComposerController, MenuController, Use } from '../common/decorators';
+import { BaseMenu, BotContext, BotStep } from '../bot.types';
+import { MenuController, Use } from '../common/decorators';
 import { label } from '../common/helpers';
-import { GlobalService } from '../services/global.service';
 import cache from '../common/cache';
 import { BotMenus } from '../bot.constants';
 
@@ -27,7 +26,7 @@ export class GreetingMenu extends BaseMenu {
 
   private registerHandler = async (ctx: BotContext) => {
     ctx.menu.close();
-    const msg = await ctx.replyWithPhoto(cache.resolveAsset('phone'), { reply_markup: new Keyboard().requestContact(ctx.i18n.t('contact')).oneTime() });
+    const msg = await ctx.replyWithPhoto(cache.resolveAsset('phone'), { reply_markup: new Keyboard().requestContact(ctx.i18n.t('contact')).oneTime().resized() });
     cache.cacheAsset('phone', msg);
   };
   private langHandler = async (ctx: BotContext) => {

@@ -151,7 +151,7 @@
   resolved "https://registry.yarnpkg.com/@grammyjs/router/-/router-1.1.1.tgz#7c68c5a6d495a9046be164bea486cff2e81142ff"
   integrity sha512-g7JVhFiIG3xPsYxW8SGE1N4hUH2FIvAqmQOlOQpPVBYC7fyxdk6bxAEs5DJazt953uwNaLtr2mag3GwKX3jBtw==
 
-"@grammyjs/types@3.14.0", "@grammyjs/types@^3.14.0":
+"@grammyjs/types@3.14.0":
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/@grammyjs/types/-/types-3.14.0.tgz#41357af98551da47ef151b7f6cff774ac91fa654"
   integrity sha512-uUVikYAiHNU8CvkeQ6YA/QPbMLgTTpFVLp83VkXCs423w6cDsvfdA6bcrQJGUnc/Q6zHQXXZUftXDYl2b/6L4A==
@@ -3401,6 +3401,13 @@ node-releases@^2.0.18:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.18.tgz#f010e8d35e2fe8d6b2944f03f70213ecedc4ca3f"
   integrity sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==
 
+node-xlsx@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/node-xlsx/-/node-xlsx-0.24.0.tgz#a6a365acb18ad37c66c2b254b6ebe0c22dc9dc6f"
+  integrity sha512-1olwK48XK9nXZsyH/FCltvGrQYvXXZuxVitxXXv2GIuRm51aBi1+5KwR4rWM4KeO61sFU+00913WLZTD+AcXEg==
+  dependencies:
+    xlsx "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
+
 nopt@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-5.0.0.tgz#530942bb58a512fccafe53fe210f13a25355dc88"
@@ -4659,6 +4666,10 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
+
+"xlsx@https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz":
+  version "0.20.2"
+  resolved "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz#0f64eeed3f1a46e64724620c3553f2dbd3cd2d7d"
 
 xtend@^4.0.0:
   version "4.0.2"

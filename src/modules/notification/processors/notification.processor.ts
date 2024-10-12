@@ -11,13 +11,6 @@ export class NotificationConsumer extends WorkerHost {
     super();
   }
   async process(job: Job<NotificationFlowData, void, string>): Promise<any> {
-    // If isTest is true, get notification from queueEntity instead of db
-    // const isTest = job.data.type == NOTIFICATION_STATE.TEST;
-    // const notification = isTest ? job.data.notification : await this.em.findOne(Notification, { id: job.data.notification.id });
-    // if (notification.status === NotificationStatus.pending || isTest) {
-    //   console.log(job.queueQualifiedName, job.id);
-    //   await this.notificationFlowService.createChildFlow(notification, { id: job.id, queue: job.queueQualifiedName }, job.data.type);
-    // }
     const results = Object.values(await job.getChildrenValues());
     if (job.data.notificationId) {
       const notification = await this.em.findOne(Notification, { id: job.data.notificationId });

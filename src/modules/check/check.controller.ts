@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CheckService } from './check.service';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiResponse } from '@nestjs/swagger';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { RequestWithUser } from '../auth/auth.types';
 import { RetrieveCheckDto } from './dto/retrieve-check.dto';
@@ -15,10 +15,11 @@ import { RetrieveCheckDto } from './dto/retrieve-check.dto';
 export class CheckController {
   constructor(private readonly checkService: CheckService) {}
 
-  // @Get()
-  // findAll() {
-  //   return this.checkService.findAll();
-  // }
+  @Get()
+  @ApiExcludeEndpoint()
+  findAll() {
+    return this.checkService.findAll();
+  }
 
   // @Put(':id')
   // update(@Param('id') id: string, @Body() updateCheckDto: UpdateCheckDto) {
@@ -42,7 +43,7 @@ export class CheckController {
     type: RetrieveCheckDto,
     isArray: true,
   })
-  findAll(@Req() req: RequestWithUser) {
-    return this.checkService.findAll(req.user);
+  findAllMe(@Req() req: RequestWithUser) {
+    return this.checkService.findAllMe(req.user);
   }
 }

@@ -1,19 +1,23 @@
-import { IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { ApiHideProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { TicketStatus } from 'src/modules/mikroorm/entities/Ticket';
 
 export class UpdateTicketDto {
   @IsString()
   @IsOptional()
   response!: string;
 
-  @IsString()
   @IsOptional()
-  status?: string;
+  @IsEnum(TicketStatus)
+  status?: TicketStatus;
 
   @IsNumber()
   @IsOptional()
+  @ApiHideProperty()
   chatId?: number;
 
   @IsNumberString()
   @IsOptional()
+  @ApiHideProperty()
   userId?: string;
 }

@@ -14,7 +14,13 @@ export class RetrieveTicketDto {
   chatId: string;
   username: string;
   object: string;
-  history: { message: string; createdAt: Date; user: string }[];
+  history: HistoryMessage[];
   status: TicketStatus;
   createdAt: Date;
+}
+
+export class HistoryMessage {
+  message: string;
+  createdAt: Date;
+  user: string;
 }

@@ -64,6 +64,12 @@ export class User extends CustomBaseEntity {
 
   @Property({ nullable: true })
   password: string;
+
+  @Property()
+  lastCheckAt = new Date();
+
+  @Property({ default: 0 })
+  uploadAttempts: number;
 }
 export class UserScope extends Scope<User> {
   byChatId(chatId: string): UserScope {
@@ -91,7 +97,6 @@ export class UserRepo extends BaseRepo<User> {
     scope.byChatId(chatId);
     return this.findOne(scope.query);
   }
-
   async createByPhoneIfNotExists(phone: string): Promise<User> {
     const scope = new UserScope();
     scope.byPhone(phone);

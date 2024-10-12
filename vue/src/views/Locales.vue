@@ -6,7 +6,7 @@
         :key="'tab-' + index"
         :value="key"
       >
-        {{ this.$ctable.locales.find((c) => c.value == key)?.title }}
+        {{ this.$ctable.locales.find((c) => c.name == key)?.description }}
       </v-tab>
     </v-tabs>
     <v-spacer></v-spacer>

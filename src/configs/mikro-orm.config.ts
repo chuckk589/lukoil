@@ -6,7 +6,7 @@ config({ path: '.lukoil.env' });
 const MikroORMOptions: MikroOrmModuleOptions = {
   type: 'mysql',
   allowGlobalContext: true,
-  ...(process.env.NODE_ENV === 'dev' ? { debug: true, logger: console.log.bind(console) } : {}),
+  ...(process.env.NODE_ENV === 'dev' ? { debug: false, logger: console.log.bind(console) } : {}),
   entities: ['./dist/modules/mikroorm/entities/'],
   entitiesTs: ['./src/modules/mikroorm/entities/'],
   clientUrl: process.env.NODE_ENV === 'dev' ? process.env.DB_URL_DEV : process.env.DB_URL,

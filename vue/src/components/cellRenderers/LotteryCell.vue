@@ -43,35 +43,9 @@ export default {
         eventName: 'new-winner',
         fields: [
           {
-            label: 'Основной',
-            key: 'primary',
-            type: 'select',
-            value: true,
-            options: [
-              {
-                value: true,
-                title: 'Да',
-              },
-              {
-                value: false,
-                title: 'Нет',
-              },
-            ],
+            label: 'Id чека',
+            key: 'fancyId',
           },
-          // {
-          //   label: 'Делит приз с',
-          //   key: 'sharesWith',
-          //   dependsOn: {
-          //     key: 'primary',
-          //     value: false,
-          //   },
-          //   type: 'select',
-          //   options: this.winners,
-          // },
-          // {
-          //   label: 'Id чека',
-          //   key: 'fancyId',
-          // },
         ],
       });
     },
