@@ -19,7 +19,7 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "nest build&&yarn run vite",
     "vite": "cd vue&&yarn run build",
     "start:dev": "nest start --watch",
     "locales": "ts-node src/modules/bot/helpers/localeLoader.ts",
