@@ -37,8 +37,7 @@ export default {
   name: 'App',
   data() {
     return {
-      username: '',
-      password: '4060510368',
+      password: '',
       errorMessage: '',
     };
   },
@@ -46,7 +45,7 @@ export default {
     login() {
       this.$http
         .post('/auth/login', {
-          username: 'admin',
+          phone: '123456789',
           password: this.password,
         })
         .then((res) => {

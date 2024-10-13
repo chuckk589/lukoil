@@ -1,24 +1,16 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { Config } from '../entities/Config';
 import { City } from '../entities/City';
 import { Prize, PrizeType } from '../entities/Prize';
 import { User, UserRole } from '../entities/User';
 
 export class ConfigSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    em.create(Config, {
-      name: 'ADMIN_PASSCODE',
-      value: '$2a$12$rok.MCu02SSWKkSuTRhwdudPl4N6QQl0sRRBf1vyTaxLiw14TwR6i',
-    });
-
-    em.create(Config, {
-      name: 'PROMO_END_DATE',
-      value: '04-01-2024',
-    });
     em.create(User, {
       username: 'admin',
       chatId: '123456789',
+      phone: '123456789',
+      password: '$2a$12$NuYIwUgG6MM.mrhTTXBZFeDKpczuiU8r9uJZ4pTn4ky2X31IRWNvS',
       role: UserRole.ADMIN,
     });
     for (let i = 0; i < cities.length; i++) {
