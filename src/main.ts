@@ -13,7 +13,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableVersioning({ type: VersioningType.URI });
   app.useGlobalPipes(new ValidationPipe());
-
+  //enable cors
+  app.enableCors();
   //swagger
   const config = new DocumentBuilder().setVersion('1.0').addBearerAuth().build();
   const document = SwaggerModule.createDocument(app, config, { include: [AuthModule, CheckModule, WinnerModule, StatusModule, TicketModule] });
