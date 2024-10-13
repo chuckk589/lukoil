@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class RegisterUserDto {
   @IsString()
@@ -7,8 +8,23 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+  @IsNumber()
+  @IsNotEmpty()
+  city: number;
 }
-export class LoginUserDto extends RegisterUserDto {}
+export class LoginUserDto extends PickType(RegisterUserDto, ['phone', 'password']) {}
 export class UserAccessToken {
   access_token: string;
 }
+
+export type UserTokenPayload = {
+  phone: string;
+  id: number;
+  credentials: string;
+};

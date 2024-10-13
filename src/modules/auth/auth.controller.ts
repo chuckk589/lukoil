@@ -31,4 +31,14 @@ export class AuthController {
   async login(@Body() loginUserDto: LoginUserDto): Promise<UserAccessToken> {
     return await this.authService.login(loginUserDto);
   }
+
+  @Post('reset')
+  @ApiResponse({
+    description: 'Password reset',
+    type: UserAccessToken,
+    status: 201,
+  })
+  async reset(@Body() loginUserDto: LoginUserDto): Promise<UserAccessToken> {
+    return await this.authService.reset(loginUserDto);
+  }
 }
