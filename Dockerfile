@@ -9,7 +9,7 @@ COPY . .
 WORKDIR /app/vue
 RUN yarn
 
-FROM base as builder
+FROM vue as builder
 WORKDIR /app
 COPY . .
 RUN yarn run build
