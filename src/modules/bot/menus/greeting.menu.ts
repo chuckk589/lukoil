@@ -6,6 +6,7 @@ import { MenuController, Use } from '../common/decorators';
 import { label } from '../common/helpers';
 import cache from '../common/cache';
 import { BotMenus } from '../bot.constants';
+import { Message } from 'grammy/types';
 
 @MenuController
 export class GreetingMenu extends BaseMenu {
@@ -39,6 +40,8 @@ export class GreetingMenu extends BaseMenu {
     ctx.i18n.locale(lang);
     ctx.session.userData.locale = lang;
 
-    await ctx.editMessageCaption({ caption: ctx.i18n.t('start') });
+    // await ctx.editMessageCaption({ caption: ctx.i18n.t('start') });
+    const msg = await ctx.editMessageMedia({ caption: ctx.i18n.t('start'), media: cache.resolveAsset(`start_${ctx.i18n.locale()}`), type: 'photo' });
+    cache.cacheAsset(`start_${ctx.i18n.locale()}`, msg as Message.PhotoMessage);
   };
 }

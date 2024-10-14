@@ -6,7 +6,16 @@ function generateLocales() {
   for (const [key, value] of Object.entries(locales)) {
     const locale = value;
     const localeName = key;
-    fs.writeFileSync(`./src/modules/bot/locales/${localeName}.json`, JSON.stringify(locale, null, 2));
+    //sort keys
+    const localeSorted: any = {};
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+
+    Object.keys(locale)
+      .sort((a, b) => collator.compare(a, b))
+      .forEach((key) => {
+        localeSorted[key] = (locale as any)[key];
+      });
+    fs.writeFileSync(`./src/modules/bot/locales/${localeName}.json`, JSON.stringify(localeSorted, null, 2));
   }
 }
 generateLocales();

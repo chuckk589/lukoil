@@ -30,7 +30,7 @@ export const label = (text: LOCALES) => {
 export const checkMessage = (ctx: BotContext, checks: Check[]): string => {
   if (!checks.length) return ctx.i18n.t('no_codes');
   const message = checks.reduce((s, c) => {
-    s += `\n${c.fancyId}`;
+    s += `\n${c.code.value}`;
     return s;
   }, ctx.i18n.t('my_codes'));
   return message;

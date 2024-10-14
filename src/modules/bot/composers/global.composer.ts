@@ -8,6 +8,7 @@ import { MainMenu } from '../menus/main.menu';
 import { GlobalService } from '../services/global.service';
 import { RegisterMenu } from '../menus/register.menu';
 import { TicketService } from 'src/modules/ticket/ticket.service';
+import { Message } from 'grammy/types';
 
 @ComposerController
 export class GlobalComposer extends BaseComposer {
@@ -25,8 +26,8 @@ export class GlobalComposer extends BaseComposer {
     if (isPresent) {
       ctx.session.setStep(BotStep.default);
 
-      const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { caption: ctx.i18n.t('main_menu'), reply_markup: this.mainMenu.getMenu() });
-      cache.cacheAsset('start', msg);
+      const msg = await ctx.replyWithPhoto(cache.resolveAsset(`start_${ctx.i18n.locale()}`), { caption: ctx.i18n.t('main_menu'), reply_markup: this.mainMenu.getMenu() });
+      cache.cacheAsset(`start_${ctx.i18n.locale()}`, msg as Message.PhotoMessage);
     } else {
       ctx.session.userData.phone = ctx.message.contact.phone_number;
       ctx.session.step = BotStep.name;
@@ -49,11 +50,11 @@ export class GlobalComposer extends BaseComposer {
 
     if (user) {
       ctx.i18n.locale(user.locale);
-      const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { caption: ctx.i18n.t('main_menu'), reply_markup: this.mainMenu.getMenu() });
-      cache.cacheAsset('start', msg);
+      const msg = await ctx.replyWithPhoto(cache.resolveAsset(`start_${ctx.i18n.locale()}`), { caption: ctx.i18n.t('main_menu'), reply_markup: this.mainMenu.getMenu() });
+      cache.cacheAsset(`start_${ctx.i18n.locale()}`, msg as Message.PhotoMessage);
     } else {
-      const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { caption: ctx.i18n.t('start'), reply_markup: this.greetingMenu.getMenu() });
-      cache.cacheAsset('start', msg);
+      const msg = await ctx.replyWithPhoto(cache.resolveAsset(`start_${ctx.i18n.locale()}`), { caption: ctx.i18n.t('start'), reply_markup: this.greetingMenu.getMenu() });
+      cache.cacheAsset(`start_${ctx.i18n.locale()}`, msg as Message.PhotoMessage);
     }
   };
   private ticketReplyHandler = async (ctx: BotContext) => {

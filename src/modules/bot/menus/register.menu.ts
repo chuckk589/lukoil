@@ -4,8 +4,7 @@ import { MenuController, Use } from '../common/decorators';
 import { label } from '../common/helpers';
 import { GlobalService } from '../services/global.service';
 import cache from '../common/cache';
-import { BotMenus } from '../bot.constants';
-import { CITY_COUNT } from 'src/constants';
+import { BotMenus, CITY_COUNT } from '../bot.constants';
 import { MainMenu } from './main.menu';
 
 @MenuController
@@ -33,8 +32,8 @@ export class RegisterMenu extends BaseMenu {
 
     await this.globalService.finishRegistration(ctx);
 
-    const msg = await ctx.replyWithPhoto(cache.resolveAsset('start'), { reply_markup: this.mainMenu.getMenu() });
-    cache.cacheAsset('start', msg);
+    const msg = await ctx.replyWithPhoto(cache.resolveAsset(`start_${ctx.i18n.locale()}`), { reply_markup: this.mainMenu.getMenu() });
+    cache.cacheAsset(`start_${ctx.i18n.locale()}`, msg);
   };
 
   @Use()
