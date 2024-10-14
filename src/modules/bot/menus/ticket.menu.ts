@@ -1,9 +1,9 @@
 import { Menu } from '@grammyjs/menu';
-import { BaseMenu, BotContext, BotStep } from '../bot.types';
+import { BaseMenu, BotContext, BotStep, LOCALES } from '../bot.types';
 import { MenuController, Use } from '../common/decorators';
 import { composeMyTicketMessage, label } from '../common/helpers';
 import { GlobalService } from '../services/global.service';
-import { BotMenus } from '../bot.constants';
+import { BotMenus, FAQ_QUESTION_AMOUNT } from '../bot.constants';
 import { TicketStatus } from 'src/modules/mikroorm/entities/Ticket';
 
 @MenuController
@@ -16,6 +16,18 @@ export class TicketMenu extends BaseMenu {
   menu = new Menu<BotContext>(BotMenus.TICKET).dynamic((ctx, range) => {
     const ticket = ctx.currentTicket;
     switch (ctx.session.step) {
+      case BotStep.default: {
+        const questionKeys = Array.from({ length: FAQ_QUESTION_AMOUNT }, (_, idx) => {
+          return 'question_' + (idx + 1);
+        });
+        for (const key of questionKeys) {
+          range.text(label(key as LOCALES), async (ctx) => {
+            await ctx.reply(ctx.i18n.t((key + '_answer') as any));
+          });
+          range.row();
+        }
+        break;
+      }
       case BotStep.tickets: {
         range.text(label('my_tickets'), async (ctx) => {
           const tickets = await this.globalService.getUserTickets(ctx.from.id);

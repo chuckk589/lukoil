@@ -60,7 +60,7 @@ export class GlobalService {
   @CreateRequestContext()
   async getUserChecks(chatId: number) {
     const user = await this.userRepo.findOneByChatId(chatId.toString());
-    await this.userRepo.populate(user, ['checks.winners.lottery.prize']);
+    await this.userRepo.populate(user, ['checks.winners.lottery.prize', 'checks.code']);
     return user.checks?.getItems() || [];
   }
   @CreateRequestContext()
@@ -70,8 +70,8 @@ export class GlobalService {
     const winners = await this.winnerRepo.findAllForUser(user.id);
     return winners;
   }
-  async switchLang(ctx: BotContext, lang: Locale) {
-    const user = await this.userRepo.findOneByChatId(ctx.from.id.toString());
+  async switchLang(chatId: number, lang: Locale) {
+    const user = await this.userRepo.findOneByChatId(chatId.toString());
     user.locale = lang;
     await this.userRepo.save(user);
   }

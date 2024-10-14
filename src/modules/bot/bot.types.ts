@@ -18,6 +18,7 @@ export enum BotStep {
   name = 'name',
   city = 'city',
   code = 'code',
+  faq = 'faq',
   // check = 'check',
   // help = 'help',
   tickets = 'tickets',

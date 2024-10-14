@@ -6,7 +6,7 @@ import { BaseRepo } from '../repo/base.repo';
 import { Scope } from '../repo/scope';
 import { Code } from './Code';
 import { LotteryState } from './Lottery';
-import { MAX_CODE_ATTEMPTS } from 'src/constants';
+import { MAX_CODE_ATTEMPTS } from 'src/modules/bot/bot.constants';
 
 export enum utmSource {
   TELEGRAM = 'telegram',

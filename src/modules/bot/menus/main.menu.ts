@@ -15,9 +15,10 @@ export class MainMenu extends BaseMenu {
   constructor(private readonly globalService: GlobalService, private readonly winMenu: WinnerMenu, private readonly ticketMenu: TicketMenu) {
     super();
   }
-  private contactHandler = async (ctx: BotContext) => {
+  private helpHandler = async (ctx: BotContext) => {
     ctx.session.userData.tickets.data = await this.globalService.getUserTickets(ctx.from.id);
     ctx.session.step = BotStep.tickets;
+    ctx.menu.close();
     await ctx.reply(ctx.i18n.t('help_details'), { reply_markup: this.ticketMenu.getMenu() });
   };
   private winnerHandler = async (ctx: BotContext) => {
@@ -52,14 +53,20 @@ export class MainMenu extends BaseMenu {
     cache.cacheAsset(`lang_${ctx.i18n.locale()}`, msg as Message.PhotoMessage);
   };
   private switchLangHandler = async (ctx: BotContext, lang: Locale) => {
-    await this.globalService.switchLang(ctx, lang);
+    await this.globalService.switchLang(ctx.from.id, lang);
 
+    ctx.i18n.locale(lang);
+    ctx.session.userData.locale = lang;
     ctx.session.setStep(BotStep.default);
 
-    const msg = await ctx.editMessageMedia({ caption: ctx.i18n.t('main_menu'), media: cache.resolveAsset(`start`), type: 'photo' });
-    cache.cacheAsset(`start`, msg as Message.PhotoMessage);
+    const msg = await ctx.editMessageMedia({ caption: ctx.i18n.t('main_menu'), media: cache.resolveAsset(`start_${ctx.i18n.locale()}`), type: 'photo' });
+    cache.cacheAsset(`start_${ctx.i18n.locale()}`, msg as Message.PhotoMessage);
   };
-
+  private faqHandler = async (ctx: BotContext) => {
+    ctx.session.setStep(BotStep.default);
+    ctx.menu.close();
+    await ctx.reply(ctx.i18n.t('faq_details'), { reply_markup: this.ticketMenu.getMenu() });
+  };
   @Use()
   menu = new Menu<BotContext>(BotMenus.MAIN).dynamic((ctx, range) => {
     if (ctx.session.step == BotStep.default) {
@@ -72,8 +79,9 @@ export class MainMenu extends BaseMenu {
       range.text(label('my_prizes'), this.prizeHandler);
       range.text(label('winners'), this.winnerHandler);
       range.row();
-      range.text(label('contacts'), this.contactHandler);
+      range.text(label('help'), this.helpHandler);
       range.text(label('switch_language'), this.langHandler);
+      range.text(label('faq'), this.faqHandler);
     } else if (ctx.session.step == BotStep.language) {
       Object.values(Locale).map((lang) => range.text(label(lang), (ctx) => this.switchLangHandler(ctx, lang)));
     }
