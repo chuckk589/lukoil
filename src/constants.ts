@@ -6,5 +6,3 @@ export const NOTIF_TG = 'NOTIF_TG';
 export const NOTIF_TG_CHILD = 'NOTIF_TG_CHILD';
 // export const FAQ1_QUESTION_AMOUNT = 11;
 // export const FAQ2_QUESTION_AMOUNT = 9;
-export const CITY_COUNT = 15;
-export const MAX_CODE_ATTEMPTS = 10;

@@ -10,3 +10,7 @@ export enum BotMenus {
   REGISTER = 'register',
   TICKET = 'ticket',
 }
+
+export const FAQ_QUESTION_AMOUNT = 12;
+export const CITY_COUNT = 15;
+export const MAX_CODE_ATTEMPTS = 10;
