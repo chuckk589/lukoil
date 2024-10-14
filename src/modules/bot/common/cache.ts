@@ -8,8 +8,8 @@ class Cache {
   private _cache: Map<string, any>;
   //TODO: remove hardcoded language
   private _assets: { [key: string]: string } = {
-    oferta_ru: 'dist/public/assets/oferta_ru.pdf',
-    oferta_kz: 'dist/public/assets/oferta_kz.pdf',
+    oferta_ru: 'dist/public/assets/oferta_ru.doc',
+    oferta_kz: 'dist/public/assets/oferta_kz.doc',
     city_ru: 'dist/public/assets/city_ru.png',
     city_kz: 'dist/public/assets/city_kz.png',
     lang_ru: 'dist/public/assets/lang_ru.png',
