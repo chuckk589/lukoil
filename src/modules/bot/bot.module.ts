@@ -36,6 +36,8 @@ export class BotModule {
   static async createBotFactory(options: GrammyBotOptions, ...composers: BaseComposer[]): Promise<Bot<BotContext>> {
     const bot = new Bot<BotContext>(options.token, { ContextConstructor: BotContext });
 
+    bot.api.setMyCommands([{ command: 'start', description: 'Меню' }]);
+
     bot.use(session);
     bot.use(checkTime);
     bot.use(i18n.middleware());
