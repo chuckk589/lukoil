@@ -6,7 +6,8 @@ import { BaseRepo } from '../repo/base.repo';
 import { Scope } from '../repo/scope';
 import { Code } from './Code';
 import { LotteryState } from './Lottery';
-import { MAX_CODE_ATTEMPTS } from 'src/modules/bot/bot.constants';
+import { MAX_CODE_ATTEMPTS, MAX_CODE_PER_PROMO, MAX_CODE_PER_WEEK } from 'src/modules/bot/bot.constants';
+import * as luxon from 'luxon';
 
 export enum utmSource {
   TELEGRAM = 'telegram',
@@ -53,22 +54,39 @@ export class Check extends CustomBaseEntity {
 export class CheckScope extends Scope<Check> {}
 export class CheckRepository extends BaseRepo<Check> {
   async createAndAddCheckForUser(user: User, codeValue: string, from: utmSource = utmSource.TELEGRAM) {
-    const isSameDay = new Date(user.lastCheckAt).toDateString() === new Date().toDateString();
+    const weekNow = luxon.DateTime.now().weekNumber;
+    const isSameWeek = luxon.DateTime.fromJSDate(new Date(user.lastCheckAt)).weekNumber == weekNow;
 
     user.uploadAttempts++;
 
-    if (!isSameDay) {
+    if (!isSameWeek) {
       user.lastCheckAt = new Date();
       user.uploadAttempts = 1;
     }
 
     await this._em.persistAndFlush(user);
 
-    //if same day check if user reached limit
-    if (isSameDay && user.uploadAttempts > MAX_CODE_ATTEMPTS) {
-      //log possible fraud
-      console.warn(`User ${user.id}, ${user.phone}, ${user.chatId} reached max attempts. Attempts: ${user.uploadAttempts}, attempted code: ${codeValue}`);
-      throw new Error('max_code_attempts');
+    if (!user.checks.isInitialized()) {
+      await user.checks.init();
+    }
+
+    //apply rules to the same week events
+    if (isSameWeek) {
+      //if same day check if user reached limit, log possible fraud
+      if (user.uploadAttempts > MAX_CODE_ATTEMPTS) {
+        console.warn(`User ${user.id}, ${user.phone}, ${user.chatId} reached max attempts. Attempts: ${user.uploadAttempts}, attempted code: ${codeValue}`);
+        throw new Error('max_code_attempts');
+      }
+
+      const checksThisWeek = user.checks.filter((check) => luxon.DateTime.fromJSDate(new Date(check.createdAt)).weekNumber === weekNow);
+
+      if (checksThisWeek.length >= MAX_CODE_PER_WEEK) {
+        throw new Error('max_code_attempts');
+      }
+
+      if (user.checks.length >= MAX_CODE_PER_PROMO) {
+        throw new Error('max_code_attempts');
+      }
     }
 
     const code = await this._em.getRepository(Code).findOneByValue(codeValue);

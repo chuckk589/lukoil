@@ -65,6 +65,7 @@ export class User extends CustomBaseEntity {
   @Property({ nullable: true })
   password: string;
 
+  //FIXME: returns string instead of date
   @Property()
   lastCheckAt = new Date();
 

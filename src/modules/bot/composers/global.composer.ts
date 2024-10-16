@@ -9,6 +9,7 @@ import { GlobalService } from '../services/global.service';
 import { RegisterMenu } from '../menus/register.menu';
 import { TicketService } from 'src/modules/ticket/ticket.service';
 import { Message } from 'grammy/types';
+import messageNotEmpty from '../middleware/messageNotEmpty';
 
 @ComposerController
 export class GlobalComposer extends BaseComposer {
@@ -58,40 +59,34 @@ export class GlobalComposer extends BaseComposer {
     }
   };
   private ticketReplyHandler = async (ctx: BotContext) => {
-    if (ctx.message) {
-      await this.ticketService.update(+ctx.currentTicket.id, {
-        response: ctx.message.text,
-        chatId: ctx.from.id,
-      });
-      ctx.session.step = BotStep.ticketsEdit;
-      await ctx.reply(ctx.i18n.t('ticket_reply_added'));
-    }
+    await this.ticketService.update(+ctx.currentTicket.id, {
+      response: ctx.message.text,
+      chatId: ctx.from.id,
+    });
+    ctx.session.step = BotStep.ticketsEdit;
+    await ctx.reply(ctx.i18n.t('ticket_reply_added'));
   };
   private ticketCreateHandler = async (ctx: BotContext) => {
-    if (ctx.message) {
-      await this.ticketService.create({ object: ctx.message.text, chatId: ctx.from.id.toString() });
-      ctx.session.step = BotStep.default;
-      await ctx.reply(ctx.i18n.t('ticket_created'));
-    }
+    await this.ticketService.create({ object: ctx.message.text, chatId: ctx.from.id.toString() });
+    ctx.session.step = BotStep.default;
+    await ctx.reply(ctx.i18n.t('ticket_created'));
   };
   private cleanHandler = async (ctx: BotContext) => {
     await this.globalService.clean(ctx);
     await ctx.reply('Cleaned', { reply_markup: { remove_keyboard: true } });
   };
   private codeHandler = async (ctx: BotContext) => {
-    if (ctx.message.text) {
-      try {
-        const check = await this.globalService.uploadCodeForUser(ctx.from.id, ctx.message.text);
-        if (check) {
-          await ctx.reply(ctx.i18n.t('request_accepted', { check_id: check.fancyId }));
-        }
-      } catch (error) {
-        if (error.message == 'code_not_found' || error.message == 'code_already_used' || error.message == 'max_code_attempts') {
-          await ctx.reply(ctx.i18n.t(error.message));
-        }
-      } finally {
-        ctx.session.step = BotStep.default;
+    try {
+      const check = await this.globalService.uploadCodeForUser(ctx.from.id, ctx.message.text);
+      if (check) {
+        await ctx.reply(ctx.i18n.t('request_accepted', { check_id: check.fancyId }));
       }
+    } catch (error) {
+      if (error.message == 'code_not_found' || error.message == 'code_already_used' || error.message == 'max_code_attempts') {
+        await ctx.reply(ctx.i18n.t(error.message));
+      }
+    } finally {
+      ctx.session.step = BotStep.default;
     }
   };
 
@@ -109,7 +104,7 @@ export class GlobalComposer extends BaseComposer {
   };
 
   @Use()
-  router = new Router<BotContext>((ctx: BotContext) => ctx.session.step)
+  router = new Router<BotContext>(messageNotEmpty)
     .route(BotStep.name, this.nameHandler)
     .route(BotStep.ticketsReply, this.ticketReplyHandler)
     .route(BotStep.ticketsCreate, this.ticketCreateHandler)
