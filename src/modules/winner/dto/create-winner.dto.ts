@@ -1,11 +1,11 @@
-import { IsBoolean, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 
 export class CreateWinnerDto {
   @IsBoolean()
   primary!: boolean;
 
-  // @IsString()
-  // fancyId!: string;
+  @IsString()
+  code!: string;
 
   // @IsNumberString()
   // @IsOptional()

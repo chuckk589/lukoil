@@ -43,8 +43,24 @@ export default {
         eventName: 'new-winner',
         fields: [
           {
-            label: 'Id чека',
-            key: 'fancyId',
+            label: 'Код',
+            key: 'code',
+          },
+          {
+            label: 'Основной',
+            key: 'primary',
+            type: 'select',
+            value: false,
+            options: [
+              {
+                name: true,
+                description: 'Да',
+              },
+              {
+                name: false,
+                description: 'Нет',
+              },
+            ],
           },
         ],
       });

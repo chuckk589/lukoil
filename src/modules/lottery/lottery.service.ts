@@ -8,47 +8,55 @@ import { CreateLotteryDto } from './dto/create-lottery.dto';
 import { Check } from '../mikroorm/entities/Check';
 import { getRandomArrayValues } from '../bot/common/helpers';
 import { UpdateLotteryDto } from './dto/update-lottery.dto';
+import { CreateWinnerDto } from '../winner/dto/create-winner.dto';
 
 @Injectable()
 export class LotteryService {
   constructor(private readonly orm: MikroORM) {}
-  //FIXME:
-  // async addWinner(createWinnerDto: CreateWinnerDto, id: number) {
-  //   const lottery = await this.em.findOne(Lottery, id, { populate: ['prize', 'winners.check'] });
-  //   const where = {
-  //     ...(lottery.prize.name == 'PRIZE_WEEKLY'
-  //       ? {
-  //           createdAt: {
-  //             $gte: lottery.start,
-  //             $lt: lottery.end,
-  //           },
-  //           winners: { $eq: null },
-  //           user: { $nin: lottery.winners.getItems().map((w) => w.check.user.id) },
-  //         }
-  //       : {}),
-  //   };
-  //   const checks = await this.em.find(
-  //     Check,
-  //     {
-  //       ...where,
-  //       status: { name: CheckState.APPROVED },
-  //     },
-  //     { populate: ['winners'] },
-  //   );
-  //   if (checks.length == 0) {
-  //     throw new HttpException(`Нет подходящих чеков`, HttpStatus.BAD_REQUEST);
-  //   }
-  //   //get random checkk
-  //   const winner = getRandomArrayValues(checks, 1)[0];
-  //   const newWinner = this.em.create(Winner, {
-  //     check: this.em.getReference(Check, winner.id),
-  //     primary: createWinnerDto.primary,
-  //   });
-  //   lottery.winners.add(newWinner);
-  //   await this.em.persistAndFlush(lottery);
-  //   await wrap(lottery).init(true, ['status.translation.values', 'prize.translation.values', 'winners.check.user']);
-  //   return new RetrieveLotteryDto(lottery);
-  // }
+  async addWinner(createWinnerDto: CreateWinnerDto, id: number) {
+    const check = await this.orm.em.getRepository(Check).findOneByCode(createWinnerDto.code);
+    // console.log(check);
+    if (!check) {
+      throw new HttpException(`Данный код не активирован`, HttpStatus.BAD_REQUEST);
+    }
+    const lottery = await this.orm.em.getRepository(Lottery).addWinnerByCode(id, check.id, createWinnerDto.primary);
+    return new RetrieveLotteryDto(lottery);
+    // const lottery = await this.em.findOne(Lottery, id, { populate: ['prize', 'winners.check'] });
+    // const where = {
+    //   ...(lottery.prize.name == 'PRIZE_WEEKLY'
+    //     ? {
+    //         createdAt: {
+    //           $gte: lottery.start,
+    //           $lt: lottery.end,
+    //         },
+    //         winners: { $eq: null },
+    //         user: { $nin: lottery.winners.getItems().map((w) => w.check.user.id) },
+    //       }
+    //     : {}),
+    // };
+    // const checks = await this.em.find(
+    //   Check,
+    //   {
+    //     ...where,
+    //     status: { name: CheckState.APPROVED },
+    //   },
+    //   { populate: ['winners'] },
+    // );
+    // if (checks.length == 0) {
+    //   throw new HttpException(`Нет подходящих чеков`, HttpStatus.BAD_REQUEST);
+    // }
+    // //get random checkk
+    // const winner = getRandomArrayValues(checks, 1)[0];
+    // const newWinner = this.em.create(Winner, {
+    //   check: this.em.getReference(Check, winner.id),
+    //   primary: createWinnerDto.primary,
+    // });
+    // lottery.winners.add(newWinner);
+    // await this.em.persistAndFlush(lottery);
+    // await wrap(lottery).init(true, ['status.translation.values', 'prize.translation.values', 'winners.check.user']);
+    // return new RetrieveLotteryDto(lottery);
+  }
+
   async create(createLotteryDto: CreateLotteryDto): Promise<RetrieveLotteryDto> {
     createLotteryDto.reserveWinners = createLotteryDto.primaryWinners;
     //should be at least equal
@@ -59,15 +67,12 @@ export class LotteryService {
       );
     }
     const requestedPrize = await this.orm.em.getRepository(Prize).findOne({ id: createLotteryDto.prize });
-    const where = {
-      ...(requestedPrize.prizeType == PrizeType.PRIZE_WEEKLY
-        ? {
-            start: new Date(createLotteryDto.start),
-            end: new Date(createLotteryDto.end),
-          }
-        : null),
-    };
-    const checks = await this.orm.em.getRepository(Check).findAllChecks(where);
+
+    const checks = await this.orm.em.getRepository(Check).findAllChecks({
+      start: new Date(createLotteryDto.start),
+      end: new Date(createLotteryDto.end),
+      notWinner: requestedPrize.prizeType == PrizeType.PRIZE_WEEKLY,
+    });
 
     // if (avaivablePrizes.length < Number(createLotteryDto.primaryWinners)) {
     //   throw new HttpException(

@@ -3,6 +3,7 @@ import { CustomBaseEntity } from './CustomBaseEntity';
 import { Winner } from './Winner';
 import { BaseRepo } from '../repo/base.repo';
 import { Prize } from './Prize';
+import { Check } from './Check';
 export enum LotteryState {
   PENDING = 'pending',
   ENDED = 'ended',
@@ -43,6 +44,16 @@ export class Lottery extends CustomBaseEntity {
   // }
 }
 export class LotteryRepo extends BaseRepo<Lottery> {
+  async addWinnerByCode(lotteryId: number, checkId: number, primary: boolean) {
+    const lottery = await this.findOneOrFail(lotteryId, { populate: ['winners.check.user', 'prize'] });
+    const winner = this.em.create(Winner, {
+      check: this.em.getReference(Check, checkId),
+      primary,
+    });
+    lottery.winners.add(winner);
+    await this.em.persistAndFlush(lottery);
+    return lottery;
+  }
   async findAllFinished() {
     return await this.find(
       {

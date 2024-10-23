@@ -9,6 +9,8 @@ import { LotteryState } from './Lottery';
 import { MAX_CODE_ATTEMPTS, MAX_CODE_PER_PROMO, MAX_CODE_PER_WEEK } from 'src/modules/bot/bot.constants';
 import * as luxon from 'luxon';
 
+type GetCheckFilters = { start?: Date; end?: Date; notWinner?: boolean };
+
 export enum utmSource {
   TELEGRAM = 'telegram',
   WEB = 'web',
@@ -51,8 +53,34 @@ export class Check extends CustomBaseEntity {
   //   }
   // }
 }
-export class CheckScope extends Scope<Check> {}
+// export class UserScope extends Scope<User> {
+//   byChatId(chatId: string): UserScope {
+//     this.addQuery({ chatId });
+//     return this;
+//   }
+//   byPhone(phone: string): UserScope {
+//     this.addQuery({ phone });
+//     return this;
+//   }
+// }
+export class CheckScope extends Scope<Check> {
+  byDateRange(filter: GetCheckFilters): CheckScope {
+    if (filter.start && filter.end) {
+      this.addQuery({ createdAt: { $gte: filter.start, $lt: filter.end } });
+    }
+    return this;
+  }
+  byWinState(filter: GetCheckFilters): CheckScope {
+    if (filter.notWinner === true) {
+      this.addQuery({ winners: { $eq: null } });
+    }
+    return this;
+  }
+}
 export class CheckRepository extends BaseRepo<Check> {
+  async findOneByCode(code: string) {
+    return this.findOne({ code: { value: code } });
+  }
   async createAndAddCheckForUser(user: User, codeValue: string, from: utmSource = utmSource.TELEGRAM) {
     const weekNow = luxon.DateTime.now().weekNumber;
     const isSameWeek = luxon.DateTime.fromJSDate(new Date(user.lastCheckAt)).weekNumber == weekNow;
@@ -115,14 +143,9 @@ export class CheckRepository extends BaseRepo<Check> {
     );
     return checks;
   }
-  async findAllChecks(filters?: { start: Date; end: Date }) {
-    const checks = await this._em.find(
-      Check,
-      {
-        ...(filters ? { createdAt: { $gte: filters.start, $lt: filters.end } } : {}),
-      },
-      { populate: ['user', 'code', 'winners'] },
-    );
+  async findAllChecks(filters: GetCheckFilters = {}): Promise<Check[]> {
+    const scope = new CheckScope().byDateRange(filters).byWinState(filters).allowEmptyQuery(true);
+    const checks = await this._em.find(Check, scope.query, { populate: ['user', 'code', 'winners'] });
     return checks;
   }
 
