@@ -11,7 +11,7 @@ export enum BotMenus {
   TICKET = 'ticket',
 }
 
-export const FAQ_QUESTION_AMOUNT = 12;
+export const FAQ_QUESTION_AMOUNT = 13;
 export const CITY_COUNT = 15;
 export const MAX_CODE_ATTEMPTS = 10;
 export const MAX_CODE_PER_WEEK = 1;
