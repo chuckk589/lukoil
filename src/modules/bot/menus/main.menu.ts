@@ -44,7 +44,8 @@ export class MainMenu extends BaseMenu {
   };
   private participateHandler = async (ctx: BotContext) => {
     ctx.session.setStep(BotStep.code);
-    await ctx.reply(ctx.i18n.t('participate_details'));
+    const msg = await ctx.replyWithPhoto(cache.resolveAsset(`participate`), { caption: ctx.i18n.t('participate_details') });
+    cache.cacheAsset(`participate`, msg);
   };
   private langHandler = async (ctx: BotContext) => {
     ctx.session.setStep(BotStep.language);

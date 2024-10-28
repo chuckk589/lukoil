@@ -19,6 +19,7 @@ class Cache {
     phone: 'dist/public/assets/phone.png',
     about_ru: 'dist/public/assets/about_ru.png',
     about_kz: 'dist/public/assets/about_kz.png',
+    participate: 'dist/public/assets/participate.png',
   };
   public resolveAsset(name: string): string | InputFile {
     if (this._cache.has(name)) return this._cache.get(name);
