@@ -10,12 +10,12 @@ import { UpdateWinnerDto } from './dto/update-winner.dto';
   path: 'winner',
   version: '1',
 })
-@ApiBearerAuth()
 export class WinnerController {
   constructor(private readonly winnerService: WinnerService) {}
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiExcludeEndpoint()
   update(@Param('id') id: string, @Body() updateWinnerDto: UpdateWinnerDto) {
     return this.winnerService.update(+id, updateWinnerDto);
@@ -28,6 +28,7 @@ export class WinnerController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiExcludeEndpoint()
   remove(@Param('id') id: string) {
     return this.winnerService.remove(+id);
@@ -35,6 +36,7 @@ export class WinnerController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     type: RetrieveWinnerDto,
