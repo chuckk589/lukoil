@@ -12,6 +12,7 @@ export class RetrieveUserDto {
     this.createdAt = user.createdAt.toLocaleString();
     this.cityId = user.city?.id;
     this.registered = user.registered;
+    this.isBlocked = user.isBlocked;
   }
   id: number;
   chatId: string;
@@ -24,4 +25,5 @@ export class RetrieveUserDto {
   promo: string;
   cityId: number;
   createdAt: string;
+  isBlocked: boolean;
 }

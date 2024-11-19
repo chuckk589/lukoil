@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Locale, UserRole } from 'src/modules/mikroorm/entities/User';
 
 export class UpdateUserDto {
@@ -18,9 +18,11 @@ export class UpdateUserDto {
   @IsEnum(UserRole)
   role?: UserRole;
 
-  @IsOptional()
-  registered?: boolean;
+  // @IsOptional()
+  // registered?: boolean;
 
+  @IsBoolean()
+  isBlocked?: boolean;
   // @IsOptional()
   // @IsNumberString()
   // promo?: string;

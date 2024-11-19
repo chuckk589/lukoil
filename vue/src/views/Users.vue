@@ -71,6 +71,15 @@ export default {
           },
         },
         {
+          field: 'isBlocked',
+          headerName: 'Заблокирован',
+          filter: true,
+          valueFormatter: (params) => (params.value ? 'Да' : 'Нет'),
+          filterParams: {
+            valueFormatter: (params) => (params.value == 'true' ? 'Да' : 'Нет'),
+          },
+        },
+        {
           field: 'registered',
           headerName: 'Регистрация пройдена',
           filter: true,

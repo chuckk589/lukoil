@@ -55,6 +55,23 @@ export default {
             value: this.params.data.role,
             options: this.$ctable.roles,
           },
+          {
+            label: 'Заблокирован',
+            key: 'isBlocked',
+            hint: 'Заблокированные пользователи не принимают участия в акциях',
+            type: 'select',
+            value: this.params.data.isBlocked,
+            options: [
+              {
+                name: true,
+                description: 'Да',
+              },
+              {
+                name: false,
+                description: 'Нет',
+              },
+            ],
+          },
         ],
       });
     },

@@ -77,7 +77,7 @@ export class CheckScope extends Scope<Check> {
     return this;
   }
   byBlockedState(filter: GetCheckFilters): CheckScope {
-    if (filter.notBlocked ?? true) {
+    if (filter.notBlocked ?? false) {
       this.addQuery({ user: { isBlocked: !filter.notBlocked } });
     }
     return this;

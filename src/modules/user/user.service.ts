@@ -18,7 +18,8 @@ export class UserService {
     user.locale = updateUserDto.locale;
     user.role = updateUserDto.role;
     user.phone = updateUserDto.phone;
-    user.registered = updateUserDto.registered;
+    user.isBlocked = updateUserDto.isBlocked;
+    // user.registered = updateUserDto.registered;
     await this.orm.em.getRepository(User).save(user);
     return new RetrieveUserDto(user);
   }
