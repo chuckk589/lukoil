@@ -71,6 +71,9 @@ export class User extends CustomBaseEntity {
 
   @Property({ default: 0 })
   uploadAttempts: number;
+
+  @Property({ default: false })
+  isBlocked: boolean;
 }
 export class UserScope extends Scope<User> {
   byChatId(chatId: string): UserScope {

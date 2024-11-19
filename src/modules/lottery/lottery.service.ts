@@ -72,6 +72,7 @@ export class LotteryService {
       start: new Date(createLotteryDto.start),
       end: new Date(createLotteryDto.end),
       notWinner: requestedPrize.prizeType == PrizeType.PRIZE_WEEKLY,
+      notBlocked: true,
     });
 
     // if (avaivablePrizes.length < Number(createLotteryDto.primaryWinners)) {

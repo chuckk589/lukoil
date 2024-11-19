@@ -9,7 +9,7 @@ import { LotteryState } from './Lottery';
 import { MAX_CODE_ATTEMPTS, MAX_CODE_PER_PROMO, MAX_CODE_PER_WEEK } from 'src/modules/bot/bot.constants';
 import * as luxon from 'luxon';
 
-type GetCheckFilters = { start?: Date; end?: Date; notWinner?: boolean };
+type GetCheckFilters = { start?: Date; end?: Date; notWinner?: boolean; notBlocked?: boolean };
 
 export enum utmSource {
   TELEGRAM = 'telegram',
@@ -73,6 +73,12 @@ export class CheckScope extends Scope<Check> {
   byWinState(filter: GetCheckFilters): CheckScope {
     if (filter.notWinner === true) {
       this.addQuery({ winners: { $eq: null } });
+    }
+    return this;
+  }
+  byBlockedState(filter: GetCheckFilters): CheckScope {
+    if (filter.notBlocked ?? true) {
+      this.addQuery({ user: { isBlocked: !filter.notBlocked } });
     }
     return this;
   }
@@ -144,7 +150,11 @@ export class CheckRepository extends BaseRepo<Check> {
     return checks;
   }
   async findAllChecks(filters: GetCheckFilters = {}): Promise<Check[]> {
-    const scope = new CheckScope().byDateRange(filters).byWinState(filters).allowEmptyQuery(true);
+    const scope = new CheckScope() //
+      .byDateRange(filters)
+      .byWinState(filters)
+      .byBlockedState(filters)
+      .allowEmptyQuery(true);
     const checks = await this._em.find(Check, scope.query, { populate: ['user', 'code', 'winners'] });
     return checks;
   }
