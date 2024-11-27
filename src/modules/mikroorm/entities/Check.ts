@@ -93,12 +93,12 @@ export class CheckRepository extends BaseRepo<Check> {
 
     user.uploadAttempts++;
 
+    await this._em.persistAndFlush(user);
+
     if (!isSameWeek) {
       user.lastCheckAt = new Date();
       user.uploadAttempts = 1;
     }
-
-    await this._em.persistAndFlush(user);
 
     if (!user.checks.isInitialized()) {
       await user.checks.init();
@@ -167,6 +167,8 @@ export class CheckRepository extends BaseRepo<Check> {
     } catch (error: any) {
       if (error instanceof DriverException && error.code == 'ER_DUP_ENTRY') {
         return await this.createCheck(payload);
+      } else {
+        throw error;
       }
     }
   }
