@@ -58,14 +58,14 @@ export class LotteryService {
   }
 
   async create(createLotteryDto: CreateLotteryDto): Promise<RetrieveLotteryDto> {
-    createLotteryDto.reserveWinners = createLotteryDto.primaryWinners;
+    // createLotteryDto.reserveWinners = createLotteryDto.primaryWinners;
     //should be at least equal
-    if (createLotteryDto.primaryWinners < createLotteryDto.reserveWinners) {
-      throw new HttpException(
-        `Number of primaryWinners should bot be less than reserveWiners , \nPrimary: ${Number(createLotteryDto.primaryWinners)}, \nReserve: ${createLotteryDto.reserveWinners}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // if (createLotteryDto.primaryWinners < createLotteryDto.reserveWinners) {
+    //   throw new HttpException(
+    //     `Number of primaryWinners should bot be less than reserveWiners , \nPrimary: ${Number(createLotteryDto.primaryWinners)}, \nReserve: ${createLotteryDto.reserveWinners}`,
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
     const requestedPrize = await this.orm.em.getRepository(Prize).findOne({ id: createLotteryDto.prize });
 
     const checks = await this.orm.em.getRepository(Check).findAllChecks({

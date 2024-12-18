@@ -4,7 +4,7 @@ export class CreateLotteryDto {
   @IsNumberString()
   primaryWinners: string;
 
-  // @IsNumberString()
+  @IsNumberString()
   reserveWinners: string;
 
   @IsNumber()

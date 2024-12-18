@@ -289,7 +289,11 @@ export default {
             key: 'primaryWinners',
             type: 'number',
           },
-
+          {
+            label: 'Запасные победители',
+            key: 'reserveWinners',
+            type: 'number',
+          },
           {
             key: 'prize',
             label: 'Что разыгрываем',
