@@ -98,13 +98,13 @@ export const prizeMessageWeek = (ctx: BotContext, week: number): string => {
 export const extractWinnersAndWeeks = <T extends RetrieveWinnerDto | BotWinner>(type: { new (dto: Winner): T }, lotteries: Lottery[]): T[] => {
   const winners: T[] = [];
   lotteries.forEach((l) => {
-    const week = DateTime.fromJSDate(l.start).weekNumber;
+    const week = DateTime.fromJSDate(l.end).weekNumber;
     const _winners = l.winners.getItems();
     for (const w of _winners) {
       const winner = new type(w);
       winner.weekNum = week;
       if (type.name == 'BotWinner') {
-        (winner as BotWinner).date = DateTime.fromJSDate(l.start).toFormat('dd.LL.yyyy');
+        (winner as BotWinner).date = DateTime.fromJSDate(l.end).toFormat('dd.LL.yyyy');
         (winner as BotWinner).prize = l.prize.prizeType;
       }
       winners.push(winner);
